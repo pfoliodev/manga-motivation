@@ -1,0 +1,242 @@
+[
+  {
+    "id": "aura_001",
+    "text": "Tu n'as pas d'ennemis. Personne n'en a. Il n'y a personne qu'il soit acceptable de blesser.",
+    "author": "Thors Snorresson",
+    "source": "Vinland Saga",
+    "category": "Stoïcisme",
+    "aura_level": 100
+  },
+  {
+    "id": "aura_002",
+    "text": "Le bonheur de votre vie dépend de la qualité de vos pensées.",
+    "author": "Marc Aurèle",
+    "source": "Réalité",
+    "category": "Mental",
+    "aura_level": 95
+  },
+  {
+    "id": "aura_003",
+    "text": "Ne prie pas pour une vie facile, prie pour avoir la force d'en supporter une difficile.",
+    "author": "Bruce Lee",
+    "source": "Réalité",
+    "category": "Discipline",
+    "aura_level": 98
+  },
+  {
+    "id": "aura_004",
+    "text": "La peur n'est pas un mal. Elle t'apprend tes propres faiblesses. Une fois que tu les connais, tu deviens plus fort.",
+    "author": "Gildarts Clive",
+    "source": "Fairy Tail",
+    "category": "Mental",
+    "aura_level": 92
+  },
+  {
+    "id": "aura_005",
+    "text": "Le monde ne te donnera rien. Si tu veux quelque chose, tu dois le prendre.",
+    "author": "Musashi Miyamoto",
+    "source": "Vagabond",
+    "category": "Ambition",
+    "aura_level": 99
+  },
+  {
+    "id": "aura_006",
+    "text": "Qui va porter les bûches ? Je vais porter les bûches.",
+    "author": "David Goggins",
+    "source": "Réalité",
+    "category": "Discipline",
+    "aura_level": 100
+  },
+  {
+    "id": "aura_007",
+    "text": "Le destin est comme une roue de fer qui écrase tout sur son passage. Mais si tu ne bouges pas, elle t'écrasera de toute façon.",
+    "author": "Guts",
+    "source": "Berserk",
+    "category": "Ambition",
+    "aura_level": 99
+  },
+  {
+    "id": "aura_008",
+    "text": "Si vous n'êtes pas prêts à tout sacrifier pour gagner, vous ne méritez pas la victoire.",
+    "author": "Itoshi Rin",
+    "source": "Blue Lock",
+    "category": "Ambition",
+    "aura_level": 94
+  },
+  {
+    "id": "aura_009",
+    "text": "L'obstination est la clé. Si tu tombes sept fois, relève-toi huit.",
+    "author": "Nana Shimura",
+    "source": "My Hero Academia",
+    "category": "Discipline",
+    "aura_level": 91
+  },
+  {
+    "id": "aura_010",
+    "text": "Le travail acharné bat le talent quand le talent ne travaille pas dur.",
+    "author": "Rock Lee",
+    "source": "Naruto",
+    "category": "Discipline",
+    "aura_level": 96
+  },
+  {
+    "id": "aura_011",
+    "text": "On ne devient pas un champion dans le gymnase. On le devient par ce qu'on ressent : un désir, un rêve, une vision.",
+    "author": "Muhammad Ali",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 97
+  },
+  {
+    "id": "aura_012",
+    "text": "Je n'ai pas peur de l'homme qui a pratiqué 10 000 coups une fois, mais de celui qui a pratiqué un coup 10 000 fois.",
+    "author": "Bruce Lee",
+    "source": "Réalité",
+    "category": "Discipline",
+    "aura_level": 98
+  },
+  {
+    "id": "aura_013",
+    "text": "La force ne vient pas de la capacité physique, elle vient d'une volonté indomptable.",
+    "author": "Mahatma Gandhi",
+    "source": "Réalité",
+    "category": "Mental",
+    "aura_level": 93
+  },
+  {
+    "id": "aura_014",
+    "text": "Rien n'est impossible pour celui qui essaie.",
+    "author": "Alexandre le Grand",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 95
+  },
+  {
+    "id": "aura_015",
+    "text": "Lève-toi. Avance. Tu as tes jambes pour marcher, n'est-ce pas ?",
+    "author": "Edward Elric",
+    "source": "Fullmetal Alchemist",
+    "category": "Discipline",
+    "aura_level": 92
+  },
+  {
+    "id": "aura_016",
+    "text": "Si tu ne trouves pas de chemin, trace-le.",
+    "author": "Elias",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 90
+  },
+  {
+    "id": "aura_017",
+    "text": "Même si je dois mourir, je ne reculerai jamais devant mon destin.",
+    "author": "Vegeta",
+    "source": "Dragon Ball Z",
+    "category": "Ambition",
+    "aura_level": 99
+  },
+  {
+    "id": "aura_018",
+    "text": "Ce n'est pas parce que c'est difficile que nous n'osons pas, c'est parce que nous n'osons pas que c'est difficile.",
+    "author": "Sénèque",
+    "source": "Réalité",
+    "category": "Stoïcisme",
+    "aura_level": 96
+  },
+  {
+    "id": "aura_019",
+    "text": "Si tu veux monter, commence par descendre en toi-même.",
+    "author": "Saint Augustin",
+    "source": "Réalité",
+    "category": "Mental",
+    "aura_level": 91
+  },
+  {
+    "id": "aura_020",
+    "text": "Le plus grand risque est de ne prendre aucun risque.",
+    "author": "Mark Zuckerberg",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 90
+  },
+  {
+    "id": "aura_021",
+    "text": "Redeviens celui que tu étais avant que le monde ne te dise qui tu devais être.",
+    "author": "Inconnu",
+    "source": "Réalité",
+    "category": "Mental",
+    "aura_level": 93
+  },
+  {
+    "id": "aura_022",
+    "text": "Un homme qui ne peut pas se sacrifier ne peut rien changer.",
+    "author": "Erwin Smith",
+    "source": "L'Attaque des Titans",
+    "category": "Ambition",
+    "aura_level": 98
+  },
+  {
+    "id": "aura_023",
+    "text": "La douleur est temporaire. L'abandon est définitif.",
+    "author": "Lance Armstrong",
+    "source": "Réalité",
+    "category": "Discipline",
+    "aura_level": 95
+  },
+  {
+    "id": "aura_024",
+    "text": "Si tu ne peux pas voler, cours. Si tu ne peux pas courir, marche. Mais continue d'avancer.",
+    "author": "Martin Luther King Jr.",
+    "source": "Réalité",
+    "category": "Discipline",
+    "aura_level": 94
+  },
+  {
+    "id": "aura_025",
+    "text": "Je vais devenir le roi des pirates !",
+    "author": "Monkey D. Luffy",
+    "source": "One Piece",
+    "category": "Ambition",
+    "aura_level": 97
+  },
+  {
+    "id": "aura_026",
+    "text": "Ne meurs pas pour tes amis, vis pour eux.",
+    "author": "Erza Scarlet",
+    "source": "Fairy Tail",
+    "category": "Mental",
+    "aura_level": 92
+  },
+  {
+    "id": "aura_027",
+    "text": "Le succès, c'est d'aller d'échec en échec sans perdre son enthousiasme.",
+    "author": "Winston Churchill",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 95
+  },
+  {
+    "id": "aura_028",
+    "text": "L'important n'est pas ce que l'on vous a fait, mais ce que vous faites de ce qu'on vous a fait.",
+    "author": "Jean-Paul Sartre",
+    "source": "Réalité",
+    "category": "Mental",
+    "aura_level": 93
+  },
+  {
+    "id": "aura_029",
+    "text": "Seul celui qui a touché le fond peut apprécier la lumière au sommet.",
+    "author": "Sung Jin-Woo",
+    "source": "Solo Leveling",
+    "category": "Ambition",
+    "aura_level": 98
+  },
+  {
+    "id": "aura_030",
+    "text": "Pour gagner, il faut être prêt à perdre.",
+    "author": "Inconnu",
+    "source": "Réalité",
+    "category": "Ambition",
+    "aura_level": 91
+  }
+]
