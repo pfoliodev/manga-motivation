@@ -2,11 +2,13 @@ import QuoteCard from '@/components/QuoteCard';
 import quotesData from '@/data/quotes.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useState } from 'react';
+import * as Notifications from 'expo-notifications';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, View } from 'react-native';
 
 export default function FeedScreen() {
   const [favorites, setFavorites] = useState<string[]>([]);
+  const flatListRef = useRef<FlatList>(null);
   const windowHeight = Dimensions.get('window').height;
   
   // Try to get tab bar height, fallback to 60 if hook fails (e.g. outside nav)
@@ -21,7 +23,35 @@ export default function FeedScreen() {
 
   useEffect(() => {
     loadFavorites();
+    checkInitialNotification();
+    
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const quoteId = response.notification.request.content.data.quoteId;
+      if (quoteId) {
+        scrollToQuote(quoteId);
+      }
+    });
+    
+    return () => subscription.remove();
   }, []);
+
+  const checkInitialNotification = async () => {
+    const response = await Notifications.getLastNotificationResponseAsync();
+    if (response) {
+      const quoteId = response.notification.request.content.data.quoteId;
+      if (quoteId) {
+        // Add a small delay to ensure list is rendered
+        setTimeout(() => scrollToQuote(quoteId), 500);
+      }
+    }
+  };
+
+  const scrollToQuote = (quoteId: string) => {
+    const index = quotesData.findIndex(q => q.id === quoteId);
+    if (index !== -1 && flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index, animated: true });
+    }
+  };
 
   const loadFavorites = async () => {
     try {
@@ -53,6 +83,7 @@ export default function FeedScreen() {
     <View className="flex-1 bg-[#0F0F0F]">
       <StatusBar barStyle="light-content" />
       <FlatList
+        ref={flatListRef}
         data={quotesData}
         renderItem={({ item }) => (
           <QuoteCard

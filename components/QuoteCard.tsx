@@ -1,7 +1,9 @@
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart, Share2 } from 'lucide-react-native';
 import React from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 
 interface Quote {
   id: string;
@@ -19,8 +21,28 @@ interface QuoteCardProps {
   height: number;
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export default function QuoteCard({ quote, isLiked, onLike, onShare, height }: QuoteCardProps) {
   const { width } = Dimensions.get('window');
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const handleLike = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    scale.value = withSequence(
+      withSpring(1.2, { damping: 10, stiffness: 200 }),
+      withSpring(1, { damping: 10, stiffness: 200 })
+    );
+    
+    onLike?.();
+  };
 
   return (
     <View style={{ width, height }} className="justify-center items-center bg-[#0F0F0F] relative">
@@ -42,13 +64,13 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height }: Q
       </View>
 
       <View className="absolute right-6 bottom-32 gap-6 items-center z-20">
-        <Pressable onPress={onLike} className="items-center justify-center p-3 rounded-full bg-[#1A1A1A]">
+        <AnimatedPressable onPress={handleLike} style={animatedStyle} className="items-center justify-center p-3 rounded-full bg-[#1A1A1A]">
           <Heart 
             size={28} 
             color={isLiked ? "#EF4444" : "#FFF"} 
             fill={isLiked ? "#EF4444" : "transparent"} 
           />
-        </Pressable>
+        </AnimatedPressable>
         <Pressable onPress={onShare} className="items-center justify-center p-3 rounded-full bg-[#1A1A1A]">
           <Share2 size={28} color="#FFF" />
         </Pressable>
