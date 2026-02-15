@@ -5,6 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
+import { AuthProvider } from '../src/context/AuthContext';
+import { FavoritesProvider } from '../src/context/FavoritesContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,10 +47,14 @@ export default function RootLayout() {
 function RootLayoutNav() {
   return (
     <ThemeProvider value={DarkTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
-      </Stack>
+      <AuthProvider>
+        <FavoritesProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
+          </Stack>
+        </FavoritesProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

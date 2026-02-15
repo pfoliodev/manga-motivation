@@ -1,9 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useQuotes } from '@/hooks/useQuotes';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from 'expo-router';
 import { BookOpen, Quote as QuoteIcon, X } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Modal,
@@ -14,57 +16,53 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import QuoteCard from '@/components/QuoteCard';
-import quotesData from '@/data/quotes.json';
+import { Quote } from '@/types/database.types';
 
-// Type definition matching the one in QuoteCard and quotes.json
-interface Quote {
-  id: string;
-  text: string;
-  author: string;
-  source: string;
-  category: string;
-  aura_level?: number;
-}
+import { useAuth } from '@/src/context/AuthContext';
+import { useRouter } from 'expo-router';
 
 export default function FavoritesScreen() {
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const { isGuest } = useAuth();
+  const router = useRouter();
+  const { quotes, loading: quotesLoading } = useQuotes();
+  const { favorites, toggleFavorite, isFavorite, loading: favoritesLoading } = useFavorites();
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  
+
   const windowHeight = Dimensions.get('window').height;
 
-  // Load favorites when screen comes into focus
+  // Refresh favorites when screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      loadFavorites();
+      // Favorites are already loaded via the hook
     }, [])
   );
 
-  const loadFavorites = async () => {
-    try {
-      const stored = await AsyncStorage.getItem('favorites');
-      if (stored) {
-        setFavorites(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error('Failed to load favorites:', e);
-    }
-  };
+  if (isGuest) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#0F0F0F] justify-center items-center px-8">
+        <BookOpen size={64} color="#333" />
+        <Text className="text-white text-2xl font-bold text-center mt-8 mb-4">
+          Vos Favoris
+        </Text>
+        <Text className="text-gray-400 text-center text-base mb-8 leading-6">
+          Connectez-vous pour sauvegarder et retrouver vos citations préférées sur tous vos appareils.
+        </Text>
+        <Pressable
+          onPress={() => router.push('/paywall')}
+          className="bg-white px-8 py-4 rounded-full active:opacity-90"
+        >
+          <Text className="text-black font-bold text-base uppercase tracking-wider">
+            Se connecter
+          </Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
 
-  const toggleFavorite = async (id: string) => {
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      let newFavorites = [...favorites];
-      if (newFavorites.includes(id)) {
-        newFavorites = newFavorites.filter(favId => favId !== id);
-      } else {
-        newFavorites.push(id);
-      }
-      setFavorites(newFavorites);
-      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } catch (e) {
-      console.error('Failed to toggle favorite:', e);
-    }
+  const handleToggleFavorite = async (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await toggleFavorite(id);
   };
 
   const handleCardPress = (quote: Quote) => {
@@ -73,10 +71,10 @@ export default function FavoritesScreen() {
   };
 
   // Filter quotes based on favorites
-  const favoriteQuotes = quotesData.filter(quote => favorites.includes(quote.id));
+  const favoriteQuotes = quotes.filter(quote => favorites.includes(quote.id));
 
   const renderItem = ({ item }: { item: Quote }) => (
-    <Pressable 
+    <Pressable
       onPress={() => handleCardPress(item)}
       className="flex-1 bg-[#1A1A1A] rounded-2xl p-4 m-2 justify-between min-h-[160px]"
       style={({ pressed }) => ({
@@ -87,17 +85,17 @@ export default function FavoritesScreen() {
       <View>
         <View className="flex-row justify-between items-start mb-2">
           <QuoteIcon size={16} color="#4B5563" />
-          <Pressable 
-            onPress={() => toggleFavorite(item.id)}
+          <Pressable
+            onPress={() => handleToggleFavorite(item.id)}
             hitSlop={10}
             className="bg-[#2A2A2A] rounded-full p-1"
           >
             <X size={14} color="#9CA3AF" />
           </Pressable>
         </View>
-        
-        <Text 
-          numberOfLines={4} 
+
+        <Text
+          numberOfLines={4}
           className="text-white text-sm font-serif italic opacity-90 mb-3 leading-5"
         >
           "{item.text}"
@@ -126,6 +124,13 @@ export default function FavoritesScreen() {
     </View>
   );
 
+  const LoadingState = () => (
+    <View className="flex-1 justify-center items-center">
+      <ActivityIndicator size="large" color="#FFF" />
+      <Text className="text-gray-400 mt-4">Chargement...</Text>
+    </View>
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-[#0F0F0F]" edges={['top']}>
       <View className="px-4 py-4">
@@ -137,7 +142,9 @@ export default function FavoritesScreen() {
         </Text>
       </View>
 
-      {favorites.length === 0 ? (
+      {(quotesLoading || favoritesLoading) && favoriteQuotes.length === 0 ? (
+        <LoadingState />
+      ) : favorites.length === 0 ? (
         <EmptyState />
       ) : (
         <FlatList
@@ -163,14 +170,14 @@ export default function FavoritesScreen() {
             <View style={{ flex: 1 }}>
               <QuoteCard
                 quote={selectedQuote}
-                isLiked={favorites.includes(selectedQuote.id)}
-                onLike={() => toggleFavorite(selectedQuote.id)}
+                isLiked={isFavorite(selectedQuote.id)}
+                onLike={() => handleToggleFavorite(selectedQuote.id)}
                 onShare={() => console.log('Share')}
                 height={windowHeight}
               />
-              
+
               {/* Close Button Overlay */}
-              <Pressable 
+              <Pressable
                 onPress={() => setModalVisible(false)}
                 className="absolute top-12 left-6 bg-[#1A1A1A] p-2 rounded-full z-50"
               >

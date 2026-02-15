@@ -14,7 +14,8 @@
       "backgroundColor": "#0F0F0F"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pfoliodev.aura-app"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,8 @@
       "expo-router",
       "expo-notifications",
       "expo-media-library",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true

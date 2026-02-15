@@ -1,16 +1,25 @@
 import QuoteCard from '@/components/QuoteCard';
-import quotesData from '@/data/quotes.json';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useQuotes } from '@/hooks/useQuotes';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Notifications from 'expo-notifications';
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, StatusBar, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  RefreshControl,
+  StatusBar,
+  Text,
+  View
+} from 'react-native';
 
 export default function FeedScreen() {
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const { quotes, loading, error, refreshing, refresh } = useQuotes();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const flatListRef = useRef<FlatList>(null);
   const windowHeight = Dimensions.get('window').height;
-  
+
   // Try to get tab bar height, fallback to 60 if hook fails (e.g. outside nav)
   let tabBarHeight = 60;
   try {
@@ -22,23 +31,22 @@ export default function FeedScreen() {
   const ITEM_HEIGHT = windowHeight - tabBarHeight;
 
   useEffect(() => {
-    loadFavorites();
     checkInitialNotification();
-    
+
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const quoteId = response.notification.request.content.data.quoteId;
+      const quoteId = response.notification.request.content.data.quoteId as string;
       if (quoteId) {
         scrollToQuote(quoteId);
       }
     });
-    
+
     return () => subscription.remove();
   }, []);
 
   const checkInitialNotification = async () => {
     const response = await Notifications.getLastNotificationResponseAsync();
     if (response) {
-      const quoteId = response.notification.request.content.data.quoteId;
+      const quoteId = response.notification.request.content.data.quoteId as string;
       if (quoteId) {
         // Add a small delay to ensure list is rendered
         setTimeout(() => scrollToQuote(quoteId), 500);
@@ -47,48 +55,51 @@ export default function FeedScreen() {
   };
 
   const scrollToQuote = (quoteId: string) => {
-    const index = quotesData.findIndex(q => q.id === quoteId);
+    const index = quotes.findIndex(q => q.id === quoteId);
     if (index !== -1 && flatListRef.current) {
       flatListRef.current.scrollToIndex({ index, animated: true });
     }
   };
 
-  const loadFavorites = async () => {
-    try {
-      const stored = await AsyncStorage.getItem('favorites');
-      if (stored) {
-        setFavorites(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // Loading state
+  if (loading && quotes.length === 0) {
+    return (
+      <View className="flex-1 bg-[#0F0F0F] justify-center items-center">
+        <StatusBar barStyle="light-content" />
+        <ActivityIndicator size="large" color="#FFF" />
+        <Text className="text-gray-400 mt-4">Chargement des citations...</Text>
+      </View>
+    );
+  }
 
-  const toggleFavorite = async (id: string) => {
-    try {
-      let newFavorites = [...favorites];
-      if (newFavorites.includes(id)) {
-        newFavorites = newFavorites.filter(favId => favId !== id);
-      } else {
-        newFavorites.push(id);
-      }
-      setFavorites(newFavorites);
-      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // Error state
+  if (error && quotes.length === 0) {
+    return (
+      <View className="flex-1 bg-[#0F0F0F] justify-center items-center px-8">
+        <StatusBar barStyle="light-content" />
+        <Text className="text-red-500 text-center text-lg mb-4">
+          Erreur de chargement
+        </Text>
+        <Text className="text-gray-400 text-center">
+          {error.message}
+        </Text>
+        <Text className="text-gray-500 text-center mt-4 text-sm">
+          Vérifiez votre configuration Supabase dans le fichier .env
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-[#0F0F0F]">
       <StatusBar barStyle="light-content" />
       <FlatList
         ref={flatListRef}
-        data={quotesData}
+        data={quotes}
         renderItem={({ item }) => (
           <QuoteCard
             quote={item}
-            isLiked={favorites.includes(item.id)}
+            isLiked={isFavorite(item.id)}
             onLike={() => toggleFavorite(item.id)}
             onShare={() => console.log('Share')}
             height={ITEM_HEIGHT}
@@ -103,6 +114,14 @@ export default function FeedScreen() {
         getItemLayout={(data, index) => (
           { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
         )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor="#FFF"
+            colors={['#FFF']}
+          />
+        }
       />
     </View>
   );
