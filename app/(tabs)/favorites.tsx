@@ -11,9 +11,10 @@ import {
   Modal,
   Pressable,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import QuoteCard from '@/components/QuoteCard';
 import { Quote } from '@/types/database.types';
@@ -29,6 +30,7 @@ export default function FavoritesScreen() {
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
   // Refresh favorites when screen comes into focus
@@ -74,24 +76,26 @@ export default function FavoritesScreen() {
   const favoriteQuotes = quotes.filter(quote => favorites.includes(quote.id));
 
   const renderItem = ({ item }: { item: Quote }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handleCardPress(item)}
       className="flex-1 bg-[#1A1A1A] rounded-2xl p-4 m-2 justify-between min-h-[160px]"
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.9 : 1,
-        transform: [{ scale: pressed ? 0.98 : 1 }]
-      })}
+      activeOpacity={0.7}
     >
       <View>
         <View className="flex-row justify-between items-start mb-2">
           <QuoteIcon size={16} color="#4B5563" />
-          <Pressable
-            onPress={() => handleToggleFavorite(item.id)}
-            hitSlop={10}
+          <TouchableOpacity
+            onPress={() => {
+              console.log('✖️ Removing from favorites:', item.id);
+              handleToggleFavorite(item.id);
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             className="bg-[#2A2A2A] rounded-full p-1"
           >
-            <X size={14} color="#9CA3AF" />
-          </Pressable>
+            <View pointerEvents="none">
+              <X size={14} color="#9CA3AF" />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <Text
@@ -113,7 +117,7 @@ export default function FavoritesScreen() {
           </Text>
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const EmptyState = () => (
@@ -177,12 +181,19 @@ export default function FavoritesScreen() {
               />
 
               {/* Close Button Overlay */}
-              <Pressable
-                onPress={() => setModalVisible(false)}
-                className="absolute top-12 left-6 bg-[#1A1A1A] p-2 rounded-full z-50"
+              <TouchableOpacity
+                onPress={() => {
+                  console.log('✖️ Closing favorites modal');
+                  setModalVisible(false);
+                }}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                className="absolute left-6 bg-[#1A1A1A] p-2 rounded-full z-50"
+                style={{ top: Math.max(insets.top, 20) }}
               >
-                <X size={24} color="white" />
-              </Pressable>
+                <View pointerEvents="none">
+                  <X size={24} color="white" />
+                </View>
+              </TouchableOpacity>
             </View>
           )}
         </View>

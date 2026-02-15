@@ -6,13 +6,16 @@ export function useRequireAuth() {
     const router = useRouter();
 
     return (action?: () => void) => {
-        if (loading) return; // Prevent action while checking auth status
+        if (loading) {
+            console.log('⏳ Auth Check in progress (loading: true), ignoring click');
+            return;
+        }
 
         if (isGuest) {
-            // Redirect to Paywall / Auth Modal
+            console.log('🛡️ Auth Required: Redirecting to /paywall');
             router.push('/paywall');
         } else {
-            // Execute the protected action
+            console.log('✅ Auth Verified: Executing action');
             if (action) {
                 action();
             }

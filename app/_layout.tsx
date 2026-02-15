@@ -44,17 +44,21 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 function RootLayoutNav() {
   return (
-    <ThemeProvider value={DarkTheme}>
-      <AuthProvider>
-        <FavoritesProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
-          </Stack>
-        </FavoritesProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={DarkTheme}>
+        <AuthProvider>
+          <FavoritesProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
+            </Stack>
+          </FavoritesProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

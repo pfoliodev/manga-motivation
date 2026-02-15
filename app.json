@@ -35,7 +35,13 @@
       "expo-notifications",
       "expo-media-library",
       "@react-native-community/datetimepicker",
-      "@react-native-google-signin/google-signin"
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosClientId": "821332954022-ei38j1urmg988h07no2ai6djqjskrkjl.apps.googleusercontent.com",
+          "iosUrlScheme": "com.googleusercontent.apps.821332954022-ei38j1urmg988h07no2ai6djqjskrkjl"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

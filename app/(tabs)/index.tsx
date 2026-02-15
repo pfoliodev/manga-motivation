@@ -1,7 +1,6 @@
 import QuoteCard from '@/components/QuoteCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useQuotes } from '@/hooks/useQuotes';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef } from 'react';
 import {
@@ -13,6 +12,7 @@ import {
   Text,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FeedScreen() {
   const { quotes, loading, error, refreshing, refresh } = useQuotes();
@@ -20,14 +20,10 @@ export default function FeedScreen() {
   const flatListRef = useRef<FlatList>(null);
   const windowHeight = Dimensions.get('window').height;
 
-  // Try to get tab bar height, fallback to 60 if hook fails (e.g. outside nav)
-  let tabBarHeight = 60;
-  try {
-    tabBarHeight = useBottomTabBarHeight();
-  } catch (e) {
-    // Ignore error if not inside bottom tab navigator immediately
-  }
+  const insets = useSafeAreaInsets();
 
+  // Tab bar height calculation: 49 is the default iOS tab bar height
+  const tabBarHeight = 49 + insets.bottom;
   const ITEM_HEIGHT = windowHeight - tabBarHeight;
 
   useEffect(() => {
