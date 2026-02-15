@@ -12,8 +12,8 @@ export function useRequireAuth() {
         }
 
         if (isGuest) {
-            console.log('🛡️ Auth Required: Redirecting to /paywall');
-            router.push('/paywall');
+            console.log('🛡️ Auth Required: Redirecting to /login');
+            router.push('/login');
         } else {
             console.log('✅ Auth Verified: Executing action');
             if (action) {

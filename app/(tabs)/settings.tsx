@@ -190,7 +190,7 @@ export default function SettingsScreen() {
           </View>
 
           {isGuest && (
-            <Pressable onPress={() => router.push('/paywall')} className="mt-2 mb-2 bg-[#2A2A2A] p-2 rounded-lg">
+            <Pressable onPress={() => router.push('/login')} className="mt-2 mb-2 bg-[#2A2A2A] p-2 rounded-lg">
               <Text className="text-yellow-500 text-xs text-center">
                 Connectez-vous pour activer les notifications
               </Text>

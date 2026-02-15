@@ -51,7 +51,7 @@ export default function FavoritesScreen() {
           Connectez-vous pour sauvegarder et retrouver vos citations préférées sur tous vos appareils.
         </Text>
         <Pressable
-          onPress={() => router.push('/paywall')}
+          onPress={() => router.push('/login')}
           className="bg-white px-8 py-4 rounded-full active:opacity-90"
         >
           <Text className="text-black font-bold text-base uppercase tracking-wider">
