@@ -362,6 +362,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AuraMangaMotivationDaily/AuraMangaMotivationDaily.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 869UVYAVB7;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -399,6 +400,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AuraMangaMotivationDaily/AuraMangaMotivationDaily.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 869UVYAVB7;
 				INFOPLIST_FILE = AuraMangaMotivationDaily/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;

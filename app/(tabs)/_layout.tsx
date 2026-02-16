@@ -1,5 +1,6 @@
+import { UserAvatar } from '@/components/UserAvatar';
 import { Tabs } from 'expo-router';
-import { Heart, Home, Settings } from 'lucide-react-native';
+import { Grid, Heart, Home } from 'lucide-react-native';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -39,12 +40,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="categories"
         options={{
           tabBarIcon: ({ color }) => (
             <View pointerEvents="none">
-              <Settings color={color} size={24} />
+              <Grid color={color} size={24} />
             </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <UserAvatar size={24} color={color} />
           ),
         }}
       />

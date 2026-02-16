@@ -61,6 +61,7 @@ export class SupabaseQuoteRepository implements QuoteRepository {
             source: row.source,
             category: row.category,
             aura_level: row.aura_level,
+            background_image: row.background_image,
         };
     }
 

@@ -1,9 +1,11 @@
+import CustomSplashScreen from '@/components/SplashScreen';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 import { AuthProvider } from '../src/context/AuthContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
@@ -44,9 +46,14 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 function RootLayoutNav() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  if (showSplash) {
+    return <CustomSplashScreen onComplete={() => setShowSplash(false)} />;
+  }
+
   return (
     <SafeAreaProvider>
       <ThemeProvider value={DarkTheme}>
@@ -54,7 +61,9 @@ function RootLayoutNav() {
           <FavoritesProvider>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
+              <Stack.Screen name="login" options={{ headerShown: false }} />
             </Stack>
           </FavoritesProvider>
         </AuthProvider>

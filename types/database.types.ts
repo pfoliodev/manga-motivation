@@ -17,6 +17,7 @@ export interface Database {
                     source: string
                     category: string
                     aura_level: number
+                    background_image: string | null
                     created_at: string
                 }
                 Insert: {
@@ -26,6 +27,7 @@ export interface Database {
                     source: string
                     category: string
                     aura_level?: number
+                    background_image?: string | null
                     created_at?: string
                 }
                 Update: {
@@ -35,6 +37,7 @@ export interface Database {
                     source?: string
                     category?: string
                     aura_level?: number
+                    background_image?: string | null
                     created_at?: string
                 }
             }
@@ -58,6 +61,38 @@ export interface Database {
                     created_at?: string
                 }
             }
+            profiles: {
+                Row: {
+                    id: string
+                    email: string | null
+                    full_name: string | null
+                    avatar_url: string | null
+                    notifications_enabled: boolean
+                    notification_time: string
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id: string
+                    email?: string | null
+                    full_name?: string | null
+                    avatar_url?: string | null
+                    notifications_enabled?: boolean
+                    notification_time?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    email?: string | null
+                    full_name?: string | null
+                    avatar_url?: string | null
+                    notifications_enabled?: boolean
+                    notification_time?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
     }
 }
@@ -70,6 +105,7 @@ export interface Quote {
     source: string;
     category: string;
     aura_level?: number;
+    background_image?: string | null;
 }
 
 export interface Favorite {

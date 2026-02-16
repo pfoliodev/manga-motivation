@@ -158,6 +158,88 @@ export default function SettingsScreen() {
           Personnalisez votre expérience Aura
         </Text>
 
+        {/* User Profile Section */}
+        {!isGuest && user && (
+          <View className="bg-[#1A1A1A] rounded-2xl p-6 mb-6">
+            <View className="flex-row items-center gap-4">
+              {/* Avatar */}
+              <View
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  overflow: 'hidden',
+                  backgroundColor: '#007AFF',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 2,
+                  borderColor: '#FFF',
+                }}
+              >
+                {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                  <View style={{ width: 64, height: 64 }}>
+                    <View style={{ width: 64, height: 64, backgroundColor: '#007AFF', alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ color: '#FFF', fontSize: 24, fontWeight: 'bold' }}>
+                        {(() => {
+                          const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email;
+                          if (!name) return '?';
+                          const parts = name.split(' ');
+                          if (parts.length >= 2) {
+                            return (parts[0][0] + parts[1][0]).toUpperCase();
+                          }
+                          return name.substring(0, 2).toUpperCase();
+                        })()}
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <Text style={{ color: '#FFF', fontSize: 24, fontWeight: 'bold' }}>
+                    {(() => {
+                      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email;
+                      if (!name) return '?';
+                      const parts = name.split(' ');
+                      if (parts.length >= 2) {
+                        return (parts[0][0] + parts[1][0]).toUpperCase();
+                      }
+                      return name.substring(0, 2).toUpperCase();
+                    })()}
+                  </Text>
+                )}
+              </View>
+
+              {/* User Info */}
+              <View className="flex-1">
+                <Text className="text-white text-lg font-bold mb-1">
+                  {user.user_metadata?.full_name || user.user_metadata?.name || 'Utilisateur'}
+                </Text>
+                <Text className="text-gray-400 text-sm">
+                  {user.email}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Guest CTA */}
+        {isGuest && (
+          <Pressable
+            onPress={() => router.push('/login')}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-6"
+            style={{
+              backgroundColor: '#007AFF',
+            }}
+          >
+            <Text className="text-white text-lg font-bold mb-2">
+              Connectez-vous pour débloquer toutes les fonctionnalités
+            </Text>
+            <Text className="text-white/80 text-sm">
+              Synchronisez vos favoris, activez les notifications et bien plus encore
+            </Text>
+          </Pressable>
+        )}
+
+        {/* Notifications Section */}
+
         <View className="bg-[#1A1A1A] rounded-2xl p-4">
           <View className="flex-row items-center justify-between py-2">
             <View className="flex-row items-center gap-3">

@@ -31,6 +31,16 @@ if (GoogleSignin) {
     }
 }
 
+// Helper to generate a random nonce
+function generateNonce(length: number = 32) {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return result;
+}
+
 export const authService = {
     async signInWithApple() {
         try {
@@ -74,12 +84,21 @@ export const authService = {
 
         try {
             await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
+
+            // To fix "Passed nonce and nonce in id_token should either both exist or not"
+            // we generate a nonce and pass it to both Google and Supabase
+            const nonce = generateNonce();
+
+            const userInfo = await GoogleSignin.signIn({
+                // @ts-ignore - nonce is supported in newer versions but might not be in types yet
+                nonce,
+            });
 
             if (userInfo.data?.idToken) {
                 const { data, error } = await supabase.auth.signInWithIdToken({
                     provider: 'google',
                     token: userInfo.data.idToken,
+                    nonce: nonce,
                 });
 
                 if (error) throw error;
@@ -98,11 +117,11 @@ export const authService = {
                 throw new Error('Play Services not available or outdated');
             } else {
                 console.error("Google Sign Error:", error);
-                // Safe check for invariant error string if standard error properties aren't enough
+
                 if (error.toString().includes("invariant") || error.toString().includes("TurboModuleRegistry")) {
                     alert("Google Sign-In requires a custom dev client. It does not work in Expo Go.");
                 } else {
-                    alert("Google Sign-In failed. See logs.");
+                    alert(`Google Sign-In failed: ${error.message || 'Unknown error'}`);
                 }
                 return null;
             }
