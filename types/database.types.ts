@@ -69,6 +69,11 @@ export interface Database {
                     avatar_url: string | null
                     notifications_enabled: boolean
                     notification_time: string
+                    xp: number
+                    level: number
+                    last_login: string | null
+                    streak_count: number
+                    max_streak: number
                     created_at: string
                     updated_at: string
                 }
@@ -79,6 +84,11 @@ export interface Database {
                     avatar_url?: string | null
                     notifications_enabled?: boolean
                     notification_time?: string
+                    xp?: number
+                    level?: number
+                    last_login?: string | null
+                    streak_count?: number
+                    max_streak?: number
                     created_at?: string
                     updated_at?: string
                 }
@@ -89,10 +99,47 @@ export interface Database {
                     avatar_url?: string | null
                     notifications_enabled?: boolean
                     notification_time?: string
+                    xp?: number
+                    level?: number
+                    last_login?: string | null
+                    streak_count?: number
+                    max_streak?: number
                     created_at?: string
                     updated_at?: string
                 }
             }
+            user_seen_quotes: {
+                Row: {
+                    id: string
+                    user_id: string
+                    quote_id: string
+                    viewed_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    quote_id: string
+                    viewed_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    quote_id?: string
+                    viewed_at?: string
+                }
+            }
+        }
+        Views: {
+            [_ in never]: never
+        }
+        Functions: {
+            [_ in never]: never
+        }
+        Enums: {
+            [_ in never]: never
+        }
+        CompositeTypes: {
+            [_ in never]: never
         }
     }
 }
@@ -113,4 +160,20 @@ export interface Favorite {
     userId: string;
     quoteId: string;
     createdAt: string;
+}
+
+export interface UserProfile {
+    id: string;
+    email: string | null;
+    fullName: string | null;
+    avatarUrl: string | null;
+    notificationsEnabled: boolean;
+    notificationTime: string;
+    xp: number;
+    level: number;
+    lastLogin: string | null;
+    streakCount: number;
+    maxStreak: number;
+    createdAt: string;
+    updatedAt: string;
 }

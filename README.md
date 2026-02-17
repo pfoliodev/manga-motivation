@@ -5,12 +5,26 @@ AURA est une application mobile élégante et inspirante conçue pour motiver le
 ## ✨ Fonctionnalités
 
 - **Citations Quotidiennes** : Recevez une dose d'inspiration chaque jour avec des citations de personnages iconiques (Goku, Naruto, Luffy, etc.).
+- **Système d'Aura (Gamification)** : Progressez à travers 7 rangs épiques (Bois, Fer, Bronze, Argent, Or, Platine, Diamant) basés sur votre assiduité.
+- **Gain d'XP Dynamique** : Gagnez de l'XP en découvrant de nouvelles citations chaque jour.
+- **Progression en Temps Réel** : Suivez votre niveau d'Aura et votre barre d'XP qui évoluent instantanément.
+- **Suivi des Découvertes** : Identifiez facilement les citations déjà lues grâce à l'indicateur discret "DÉJÀ LU".
 - **Catégories Variées** : Parcourez les citations par thèmes (Discipline, Amitié, Force, Sagesse, etc.).
 - **Favoris** : Enregistrez vos citations préférées pour les retrouver facilement.
 - **Partage Social** : Partagez des citations stylisées directement sur vos réseaux sociaux (Instagram, WhatsApp, etc.).
-- **Animations Manga** : Une interface immersive avec des animations parallaxes et des transitions fluides inspirées de l'univers manga.
-- **Écran de démarrage Dynamique** : Un écran "Splash" animé pour une immersion dès l'ouverture de l'application.
+- **Animations Shōnen** : Une interface immersive avec des animations de gain d'XP et des feedbacks haptiques.
 - **Authentification Sécurisée** : Connexion simplifiée via Google, Apple ou Email (via Supabase).
+
+## 🏆 Système de Rangs
+
+Votre dévouement est récompensé par des grades de plus en plus prestigieux :
+- 🪵 **BOIS** (Level 1)
+- ⚙️ **FER** (Level 5)
+- 🥉 **BRONZE** (Level 10)
+- 🥈 **ARGENT** (Level 20)
+- 🥇 **OR** (Level 35)
+- 💎 **PLATINE** (Level 50)
+- 💠 **DIAMANT** (Level 75)
 
 ## 🛠 Architecture & Stack Technique
 

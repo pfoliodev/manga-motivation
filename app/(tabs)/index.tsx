@@ -1,5 +1,6 @@
 import QuoteCard from '@/components/QuoteCard';
 import { useFavorites } from '@/hooks/useFavorites';
+import { usePowerLevel } from '@/hooks/usePowerLevel';
 import { useQuotes } from '@/hooks/useQuotes';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef } from 'react';
@@ -15,17 +16,133 @@ import {
 import Animated, {
   Extrapolation,
   interpolate,
+  runOnJS,
   useAnimatedScrollHandler,
   useAnimatedStyle,
-  useSharedValue
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const XPGainAnimation = ({ visible, message, onAnimationComplete }: { visible: boolean; message?: string | null; onAnimationComplete: () => void }) => {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(0.5);
+
+  useEffect(() => {
+    if (visible) {
+      // Reset values
+      opacity.value = 0;
+      translateY.value = 40;
+      scale.value = 0.5;
+
+      // Opacity sequence
+      opacity.value = withSequence(
+        withTiming(1, { duration: 100 }),
+        withDelay(2000, withTiming(0, { duration: 200 }, (finished) => {
+          if (finished) {
+            runOnJS(onAnimationComplete)();
+          }
+        }))
+      );
+
+      // Scale sequence
+      scale.value = withSequence(
+        withSpring(1.3, { damping: 15 }),
+        withSpring(1.0, { damping: 15 })
+      );
+
+      // Movement sequence
+      translateY.value = withSequence(
+        withSpring(0, { damping: 15 }),
+        withDelay(2000, withTiming(-40, { duration: 200 }))
+      );
+    }
+  }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateY: translateY.value },
+      { scale: scale.value }
+    ],
+  }));
+
+  if (!visible) return null;
+
+  return (
+    <View
+      style={[StyleSheet.absoluteFillObject, { zIndex: 9999, justifyContent: 'flex-start', alignItems: 'center', paddingTop: '20%' }]}
+      pointerEvents="none"
+    >
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            shadowColor: message ? "#FF0000" : "#FFD700", // Red shadow for level up!
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.9,
+            shadowRadius: message ? 30 : 20,
+          }
+        ]}
+      >
+        {message ? (
+          <View>
+            <Text style={{
+              fontFamily: 'Bangers_400Regular',
+              color: '#FFD700',
+              fontSize: 52, // Epic size
+              textShadowColor: 'rgba(0,0,0,0.9)',
+              textShadowRadius: 15,
+              letterSpacing: 4,
+              textAlign: 'center'
+            }}>
+              {message}
+            </Text>
+            <Text style={{
+              fontFamily: 'Bangers_400Regular',
+              color: '#FFFFFF',
+              fontSize: 18,
+              textShadowColor: 'rgba(0,0,0,0.8)',
+              textShadowRadius: 5,
+              letterSpacing: 2,
+              textAlign: 'center',
+              marginTop: -5
+            }}>
+              AURA AUGMENTÉE !
+            </Text>
+          </View>
+        ) : (
+          <Text style={{
+            fontFamily: 'Bangers_400Regular',
+            color: '#FFD700',
+            fontSize: 36,
+            textShadowColor: 'rgba(0,0,0,0.8)',
+            textShadowRadius: 10,
+            letterSpacing: 2,
+            textAlign: 'center'
+          }}>
+            +5 XP
+          </Text>
+        )}
+      </Animated.View>
+    </View>
+  );
+};
 
 export default function FeedScreen() {
   const { quotes, loading, error, refreshing, refresh } = useQuotes();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { markQuoteAsSeen } = usePowerLevel(); // Add hook
   const flatListRef = useRef<Animated.FlatList<any>>(null);
   const { height: windowHeight } = Dimensions.get('window');
+
+  // XP Animation state
+  const [showXP, setShowXP] = React.useState(false);
+  const [xpMessage, setXpMessage] = React.useState<string | null>(null);
 
   const insets = useSafeAreaInsets();
 
@@ -39,6 +156,40 @@ export default function FeedScreen() {
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   });
+
+  // Tracking viewed items
+  const onViewableItemsChanged = useRef(async ({ viewableItems }: { viewableItems: any[] }) => {
+    if (viewableItems.length > 0) {
+      const currentItem = viewableItems[0];
+      if (currentItem && currentItem.item && currentItem.item.id) {
+        try {
+          const result = await markQuoteAsSeen(currentItem.item.id);
+          if (result && result.xpGained > 0) {
+            // Reset then show animation
+            setShowXP(false);
+
+            // Show 'LEVEL UP!' only if user actually leveled up
+            if (result.leveledUp) {
+              setXpMessage('LEVEL UP!');
+            } else {
+              setXpMessage(null);
+            }
+
+            // Force a re-render/reflow before showing again
+            setTimeout(() => setShowXP(true), 10);
+          }
+        } catch (e) {
+          console.error('Error in view tracking:', e);
+        }
+      }
+    }
+  }).current;
+
+  // Viewability config
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50, // Consider item viewed when 50% visible
+    minimumViewTime: 500, // User must look at it for 500ms
+  }).current;
 
   useEffect(() => {
     checkInitialNotification();
@@ -155,6 +306,14 @@ export default function FeedScreen() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
+
+      {/* XP Gain Animation Overlay */}
+      <XPGainAnimation
+        visible={showXP}
+        message={xpMessage}
+        onAnimationComplete={() => setShowXP(false)}
+      />
+
       <Animated.FlatList
         ref={flatListRef}
         data={quotes}
@@ -177,6 +336,8 @@ export default function FeedScreen() {
         getItemLayout={(data, index) => (
           { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
         )}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

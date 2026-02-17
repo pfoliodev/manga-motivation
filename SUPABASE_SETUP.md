@@ -29,28 +29,31 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=votre-cle-anonyme-ici
 ```
 
 ### 4. Exécuter les migrations SQL
+Les migrations doivent être exécutées dans l'ordre suivant pour garantir la cohérence de la base de données :
 
-#### 4.1 Créer les tables
-
-1. Dans Supabase, allez dans **SQL Editor**
-2. Cliquez sur **New Query**
-3. Copiez-collez le contenu de `supabase/migrations/001_initial_schema.sql`
-4. Cliquez sur **Run**
-
-#### 4.2 Peupler les données
-
-1. Créez une nouvelle query
-2. Copiez-collez le contenu de `supabase/seed.sql`
-3. Cliquez sur **Run**
+1. **Initial Schema** : `supabase/migrations/001_initial_schema.sql` (Tables de base)
+2. **Profiles** : `supabase/migrations/004_create_profiles_with_email.sql` (Gestion utilisateur avancée)
+3. **Background Images** : `supabase/migrations/005_add_background_image_to_quotes.sql` (Esthétique des citations)
+4. **Power Level System** : `supabase/migrations/20260217_add_power_level_system.sql` (XP, Niveaux, Rangs)
+5. **User Tracking** : `supabase/migrations/20260217_create_user_seen_quotes.sql` (Suivi des lectures)
+6. **Realtime** : `supabase/migrations/20260217_enable_realtime_profiles.sql` (Mises à jour instantanées)
 
 ### 5. Vérifier l'installation
 
 1. Allez dans **Database** → **Tables**
 2. Vous devriez voir :
-   - `quotes` (30 lignes)
-   - `favorites` (0 lignes)
+   - `quotes` : Les sagesses des maîtres.
+   - `favorites` : Tes trésors personnels.
+   - `profiles` : Ton identité de guerrier (XP, Niveau, Streak).
+   - `user_seen_quotes` : Tes archives de lecture.
 
-### 6. Activer l'authentification anonyme
+### 6. Activer le Realtime (Optionnel mais recommandé)
+Pour une expérience fluide (Aura qui s'actualise en temps réel), assurez-vous que la publication Realtime est activée pour la table `profiles` :
+1. Dans Supabase : **Database** → **Replication**
+2. Dans la section **Source**, cliquez sur "Tables" pour le slot `supabase_realtime`
+3. Activez l'interrupteur pour la table `profiles`.
+
+### 7. Activer l'authentification anonyme
 
 1. Allez dans **Authentication** → **Providers**
 2. Activez **Anonymous sign-ins**

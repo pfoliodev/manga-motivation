@@ -1,9 +1,10 @@
+import { usePowerLevel } from '@/hooks/usePowerLevel';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Sharing from 'expo-sharing';
-import { Heart, Share2 } from 'lucide-react-native';
+import { Award, Crown, Eye, Gem, Hammer, Heart, Medal, Share2, Sparkles, TreePine } from 'lucide-react-native';
 import React, { useRef } from 'react';
-import { Dimensions, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import { captureRef } from 'react-native-view-shot';
 import { useRequireAuth } from '../src/hooks/useRequireAuth';
@@ -64,10 +65,44 @@ interface QuoteCardProps {
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 
+// Rank System - Inspired by RPG/Manga progression
+interface RankTier {
+  name: string;
+  color: string;
+  glowColor: string;
+  minLevel: number;
+  icon: React.ComponentType<any>;
+}
+
+const RANK_TIERS: RankTier[] = [
+  { name: 'BOIS', color: '#8B4513', glowColor: '#8B4513', minLevel: 1, icon: TreePine },      // Wood - Brown
+  { name: 'FER', color: '#708090', glowColor: '#708090', minLevel: 5, icon: Hammer },         // Iron - Slate Gray
+  { name: 'BRONZE', color: '#CD7F32', glowColor: '#CD7F32', minLevel: 10, icon: Award },      // Bronze
+  { name: 'ARGENT', color: '#C0C0C0', glowColor: '#C0C0C0', minLevel: 20, icon: Medal },      // Silver
+  { name: 'OR', color: '#FFD700', glowColor: '#FFD700', minLevel: 35, icon: Crown },          // Gold
+  { name: 'PLATINE', color: '#E5E4E2', glowColor: '#00CED1', minLevel: 50, icon: Gem },       // Platinum - Cyan glow
+  { name: 'DIAMANT', color: '#B9F2FF', glowColor: '#00BFFF', minLevel: 75, icon: Sparkles },  // Diamond - Blue glow
+];
+
+function getRankForLevel(level: number): RankTier {
+  // Find the highest rank tier the user qualifies for
+  for (let i = RANK_TIERS.length - 1; i >= 0; i--) {
+    if (level >= RANK_TIERS[i].minLevel) {
+      return RANK_TIERS[i];
+    }
+  }
+  return RANK_TIERS[0]; // Default to Wood
+}
+
 export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scrollY, index, itemSize }: QuoteCardProps) {
   const { width } = Dimensions.get('window');
   const scale = useSharedValue(1);
   const viewRef = useRef<View>(null);
+  const { profile, isQuoteSeen } = usePowerLevel();
+  const alreadySeen = isQuoteSeen(quote.id);
+
+  // Get current rank based on level
+  const currentRank = profile ? getRankForLevel(profile.level) : RANK_TIERS[0];
 
   // Taille utilisée pour le calcul de l'interpolation
   // Si itemSize est fourni (cas de la liste avec header/margins), on l'utilise.
@@ -125,6 +160,29 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
     return {
       opacity: interpolate(scrollY.value, inputRange, [0, 1, 0]),
       transform: [{ translateX }]
+    };
+  });
+
+  // Animation pour le badge de niveau (arrive du haut)
+  const levelBadgeAnimatedStyle = useAnimatedStyle(() => {
+    if (!scrollY || index === undefined) return { opacity: 1 };
+
+    const inputRange = [
+      (index - 1) * sizeForInterpolation,
+      index * sizeForInterpolation,
+      (index + 1) * sizeForInterpolation
+    ];
+
+    const translateY = interpolate(
+      scrollY.value,
+      inputRange,
+      [-50, 0, -50],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity: interpolate(scrollY.value, inputRange, [0, 1, 0]),
+      transform: [{ translateY }]
     };
   });
 
@@ -219,6 +277,149 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
         >
           AURA : Manga & Motivation
         </Animated.Text>
+
+        {/* Power Level Badge - Horizontal Pill Style */}
+        {profile && (
+          <Animated.View
+            style={[
+              levelBadgeAnimatedStyle,
+              {
+                position: 'absolute',
+                top: 55,
+                left: 20,
+                zIndex: 50,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                borderRadius: 12,
+                borderWidth: 1.5,
+                borderColor: currentRank.color,
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+                alignItems: 'center', // Center children horizontally
+                gap: 4,               // Gap between info row and XP bar
+                shadowColor: currentRank.glowColor,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.8,
+                shadowRadius: 10,
+              }
+            ]}
+            pointerEvents="none"
+          >
+            {/* Top Row: Icon + Level + Separator + Rank Name */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {/* Left Group: Icon + Level */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                {React.createElement(currentRank.icon, {
+                  size: 16,
+                  color: currentRank.color,
+                  strokeWidth: 2.5,
+                  style: {
+                    shadowColor: currentRank.glowColor,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 6,
+                  }
+                })}
+
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Bangers_400Regular',
+                    fontSize: 18,
+                    letterSpacing: 1
+                  }}
+                >
+                  LVL {profile.level}
+                </Text>
+              </View>
+
+              {/* Separator */}
+              <View
+                style={{
+                  width: 1,
+                  height: 14,
+                  backgroundColor: currentRank.color,
+                  opacity: 0.5
+                }}
+              />
+
+              {/* Right Group: Rank Name */}
+              <Text
+                style={{
+                  color: currentRank.color,
+                  fontSize: 12,
+                  fontWeight: '800',
+                  letterSpacing: 1,
+                  textTransform: 'uppercase',
+                  textShadowColor: currentRank.glowColor,
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 8,
+                }}
+              >
+                {currentRank.name}
+              </Text>
+            </View>
+
+            {/* XP Bar - Discreet */}
+            <View style={{
+              width: '100%',
+              height: 2,
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: 1,
+              marginTop: 1,
+              overflow: 'hidden'
+            }}>
+              <View style={{
+                width: `${(() => {
+                  const level = profile.level;
+                  const currentLevelXP = level ** 2 * 10;
+                  const nextLevelXP = (level + 1) ** 2 * 10;
+                  const xpInCurrentLevel = profile.xp - currentLevelXP;
+                  const xpNeededForLevel = nextLevelXP - currentLevelXP;
+                  const progress = Math.min(1, Math.max(0, xpInCurrentLevel / xpNeededForLevel));
+                  return progress * 100;
+                })()}%`,
+                height: '100%',
+                backgroundColor: currentRank.color,
+                borderRadius: 1
+              }} />
+            </View>
+
+          </Animated.View>
+        )}
+
+        {/* Already Seen Indicator - Discreet Top Right */}
+        {alreadySeen && (
+          <Animated.View
+            style={[
+              levelBadgeAnimatedStyle, // Use same fade/slide animation as level badge for consistency
+              {
+                position: 'absolute',
+                top: 55,
+                right: 20,
+                zIndex: 50,
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                gap: 4
+              }
+            ]}
+          >
+            <Eye size={12} color="rgba(255, 255, 255, 0.5)" />
+            <Text style={{
+              color: 'rgba(255, 255, 255, 0.5)',
+              fontSize: 10,
+              fontWeight: '600',
+              letterSpacing: 0.5
+            }}>
+              DÉJÀ LU
+            </Text>
+          </Animated.View>
+        )}
       </View>
 
       <View
