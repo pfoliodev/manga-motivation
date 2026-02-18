@@ -21,10 +21,18 @@ function getGoogleSignin() {
 const { GoogleSignin } = getGoogleSignin();
 if (GoogleSignin) {
     try {
+        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+
+        console.log('🛠️ Google Signin Init - Web ID:', webClientId ? 'LOADED' : 'MISSING');
+        console.log('🛠️ Google Signin Init - iOS ID:', iosClientId ? 'LOADED' : 'MISSING');
+
         GoogleSignin.configure({
             scopes: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
-            webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-            iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+            webClientId,
+            iosClientId,
+            offlineAccess: true,
+            forceCodeForRefreshToken: true,
         });
     } catch (e) {
         console.warn('Google Signin configure failed:', e);
@@ -94,17 +102,22 @@ export const authService = {
                 nonce,
             });
 
-            if (userInfo.data?.idToken) {
+            console.log('👤 Google Sign-In userInfo raw:', JSON.stringify(userInfo, null, 2));
+
+            const idToken = userInfo.data?.idToken || (userInfo as any).idToken;
+
+            if (idToken) {
                 const { data, error } = await supabase.auth.signInWithIdToken({
                     provider: 'google',
-                    token: userInfo.data.idToken,
+                    token: idToken,
                     nonce: nonce,
                 });
 
                 if (error) throw error;
                 return data;
             } else {
-                throw new Error('No ID token present!');
+                console.error('❌ Google Sign-In Error: ID Token is missing. Response:', JSON.stringify(userInfo, null, 2));
+                throw new Error('No ID token present! Check your webClientId configuration.');
             }
         } catch (error: any) {
             if (statusCodes && error.code === statusCodes.SIGN_IN_CANCELLED) {

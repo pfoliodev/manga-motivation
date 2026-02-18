@@ -1,6 +1,6 @@
 import { UserAvatar } from '@/components/UserAvatar';
 import { Tabs } from 'expo-router';
-import { Grid, Heart, Home } from 'lucide-react-native';
+import { Heart, Home, Sparkles } from 'lucide-react-native';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -40,11 +40,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="categories"
+        name="auradex"
         options={{
           tabBarIcon: ({ color }) => (
             <View pointerEvents="none">
-              <Grid color={color} size={24} />
+              <Sparkles color={color} size={24} />
             </View>
           ),
         }}
