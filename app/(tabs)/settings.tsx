@@ -175,8 +175,8 @@ export default function SettingsScreen() {
             Personnalisez votre expérience Aura
           </Text>
 
-          {/* User Profile Section */}
-          {!isGuest && user && (
+          {/* User Profile Section - Show even if anonymous/guest to see the name/level */}
+          {user && (
             <View className="bg-[#1A1A1A] rounded-2xl p-6 mb-6">
               <View className="flex-row items-center gap-4">
                 {/* Avatar */}
@@ -227,7 +227,7 @@ export default function SettingsScreen() {
                 {/* User Info */}
                 <View className="flex-1">
                   <Text className="text-white text-lg font-bold mb-1">
-                    {user.user_metadata?.full_name || user.user_metadata?.name || 'Utilisateur'}
+                    {profile?.fullName || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Guerrier'}
                   </Text>
                   <Text className="text-gray-400 text-sm">
                     {user.email}
@@ -238,7 +238,7 @@ export default function SettingsScreen() {
           )}
 
           {/* Power Level Section */}
-          {!isGuest && user && profile && (
+          {user && profile && (
             <View className="bg-[#1A1A1A] rounded-2xl p-6 mb-6">
               <View className="flex-row items-center mb-4">
                 <Text className="text-2xl mr-2">⚡</Text>
@@ -350,7 +350,7 @@ export default function SettingsScreen() {
           )}
 
           {/* Streak Section */}
-          {!isGuest && user && profile && (
+          {user && profile && (
             <View className="bg-[#1A1A1A] rounded-2xl p-6 mb-6">
               <View className="flex-row items-center mb-4">
                 <Text className="text-2xl mr-2">🔥</Text>
@@ -500,6 +500,28 @@ export default function SettingsScreen() {
           )}
 
           <View className="mt-8 px-2">
+            {__DEV__ && (
+              <Pressable
+                onPress={async () => {
+                  try {
+                    await signOut();
+                    await AsyncStorage.multiRemove([
+                      'onboarding_complete',
+                      'onboarding_username',
+                      'preferred_categories'
+                    ]);
+                    Alert.alert("Reset", "Session coupée et onboarding réinitialisé. Redémarre l'app pour voir le changement.");
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+                className="mb-4 bg-red-900/30 border border-red-500/50 p-4 rounded-2xl items-center"
+              >
+                <Text className="text-red-400 font-bold uppercase tracking-widest text-[10px]">
+                  ⚙️ Debug : Reset Onboarding & Logout
+                </Text>
+              </Pressable>
+            )}
             <Text className="text-gray-600 text-center text-xs">
               Aura v1.0.0
             </Text>

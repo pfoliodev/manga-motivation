@@ -7,14 +7,24 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
-    const { signInWithApple, signInWithGoogle } = useAuth();
+    const { signInWithApple, signInWithGoogle, signInAnonymously } = useAuth();
     const insets = useSafeAreaInsets();
+
+    const handleGuestSignIn = async () => {
+        console.log('👤 Guest Sign In clicked');
+        try {
+            await signInAnonymously();
+            router.replace('/(tabs)');
+        } catch (error) {
+            console.error('Guest sign in error:', error);
+        }
+    };
 
     const handleAppleSignIn = async () => {
         console.log('🍎 Apple Sign In clicked');
         try {
             await signInWithApple();
-            router.back();
+            router.replace('/(tabs)');
         } catch (error) {
             console.error('Apple sign in error:', error);
         }
@@ -24,7 +34,7 @@ export default function LoginScreen() {
         console.log('🔷 Google Sign In clicked');
         try {
             await signInWithGoogle();
-            router.back();
+            router.replace('/(tabs)');
         } catch (error) {
             console.error('Google sign in error:', error);
         }
@@ -141,10 +151,7 @@ export default function LoginScreen() {
 
                     {/* Guest Button - Manga Style (Rough Border) */}
                     <TouchableOpacity
-                        onPress={() => {
-                            console.log('👤 Continue as guest');
-                            router.back();
-                        }}
+                        onPress={handleGuestSignIn}
                         activeOpacity={0.8}
                         className="w-full py-4 px-6 items-center border-[3px] border-white bg-transparent"
                         style={{
@@ -167,7 +174,7 @@ export default function LoginScreen() {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </View >
         </>
     );
 }

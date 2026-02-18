@@ -29,30 +29,39 @@ export function useQuotes() {
     // Load quotes from cache or fetch from Supabase
     const loadQuotes = useCallback(async (forceRefresh = false) => {
         try {
+            let allQuotes: Quote[] = [];
+
             // Check cache first
             if (!forceRefresh) {
                 const cachedQuotes = await getCachedQuotes();
                 if (cachedQuotes) {
                     console.log('📦 Données chargées depuis le CACHE');
-                    setState(prev => ({
-                        ...prev,
-                        quotes: cachedQuotes,
-                        loading: false,
-                    }));
-                    return;
+                    allQuotes = cachedQuotes;
                 }
             }
 
-            // Fetch from Supabase
-            console.log('🌐 Récupération des données depuis SUPABASE...');
-            const quotes = await quoteRepository.getAllQuotes();
-            console.log(`✅ ${quotes.length} citations récupérées de Supabase`);
+            // Fetch from Supabase if not in cache or force refresh
+            if (allQuotes.length === 0) {
+                console.log('🌐 Récupération des données depuis SUPABASE...');
+                allQuotes = await quoteRepository.getAllQuotes();
+                console.log(`✅ ${allQuotes.length} citations récupérées de Supabase`);
+                await cacheQuotes(allQuotes);
+            }
 
-            // Update cache
-            await cacheQuotes(quotes);
+            // Apply filtering based on preferred categories (stored in AsyncStorage during onboarding)
+            const preferredStr = await AsyncStorage.getItem('preferred_categories');
+            let finalQuotes = allQuotes;
+
+            if (preferredStr) {
+                const preferredNames: string[] = JSON.parse(preferredStr);
+                if (preferredNames.length > 0) {
+                    finalQuotes = allQuotes.filter(q => preferredNames.includes(q.category));
+                    console.log(`🎯 Filtrage appliqué : ${finalQuotes.length}/${allQuotes.length} citations correspondent à tes voies.`);
+                }
+            }
 
             setState({
-                quotes,
+                quotes: finalQuotes,
                 loading: false,
                 error: null,
                 refreshing: false,

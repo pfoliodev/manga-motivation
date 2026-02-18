@@ -1,3 +1,5 @@
+import { userRepository } from '@/repositories/SupabaseUserRepository';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Session, User } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../../utils/supabase';
@@ -10,6 +12,7 @@ interface AuthContextType {
     isGuest: boolean;
     signInWithApple: () => Promise<void>;
     signInWithGoogle: () => Promise<void>;
+    signInAnonymously: () => Promise<void>;
     signOut: () => Promise<void>;
 }
 
@@ -20,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
     isGuest: true,
     signInWithApple: async () => { },
     signInWithGoogle: async () => { },
+    signInAnonymously: async () => { },
     signOut: async () => { },
 });
 
@@ -37,6 +41,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const { data: { session } } = await supabase.auth.getSession();
                 setSession(session);
                 setUser(session?.user ?? null);
+
+                // Sync onboarding data if user just logged in and we have a session
+                if (session?.user) {
+                    syncOnboardingData(session.user.id);
+                }
             } catch (error) {
                 console.error('Error checking session:', error);
             } finally {
@@ -51,12 +60,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
+
+            if (session?.user) {
+                syncOnboardingData(session.user.id);
+            }
         });
 
         return () => {
             subscription?.unsubscribe();
         };
     }, []);
+
+    const syncOnboardingData = async (userId: string) => {
+        try {
+            const storedName = await AsyncStorage.getItem('onboarding_username');
+            const storedCategories = await AsyncStorage.getItem('preferred_categories');
+
+            const updates: any = {};
+            if (storedName) updates.fullName = storedName;
+            if (storedCategories) updates.preferredCategories = JSON.parse(storedCategories);
+
+            if (Object.keys(updates).length > 0) {
+                await userRepository.updateProfile(userId, updates);
+                console.log('✅ Onboarding data synced to Supabase');
+
+                if (storedName) await AsyncStorage.removeItem('onboarding_username');
+                // Note: We might want to keep categories locally for offline filtering, 
+                // but they are now safely in the cloud too.
+            }
+        } catch (error) {
+            console.error('Error syncing onboarding data:', error);
+        }
+    };
 
     const signInWithApple = async () => {
         setLoading(true);
@@ -81,6 +116,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const signInAnonymously = async () => {
+        setLoading(true);
+        try {
+            await authService.signInAnonymously();
+        } catch (error) {
+            console.error('Anonymous Sign In Error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const signOut = async () => {
         setLoading(true);
         try {
@@ -94,9 +140,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         session,
         user,
         loading,
-        isGuest: !session,
+        isGuest: !session || session?.user?.is_anonymous || false,
         signInWithApple,
         signInWithGoogle,
+        signInAnonymously,
         signOut,
     };
 

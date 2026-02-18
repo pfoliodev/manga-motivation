@@ -74,6 +74,7 @@ export interface Database {
                     last_login: string | null
                     streak_count: number
                     max_streak: number
+                    preferred_categories: string[]
                     created_at: string
                     updated_at: string
                 }
@@ -89,6 +90,7 @@ export interface Database {
                     last_login?: string | null
                     streak_count?: number
                     max_streak?: number
+                    preferred_categories?: string[]
                     created_at?: string
                     updated_at?: string
                 }
@@ -104,6 +106,7 @@ export interface Database {
                     last_login?: string | null
                     streak_count?: number
                     max_streak?: number
+                    preferred_categories?: string[]
                     created_at?: string
                     updated_at?: string
                 }
@@ -174,6 +177,7 @@ export interface UserProfile {
     lastLogin: string | null;
     streakCount: number;
     maxStreak: number;
+    preferredCategories: string[];
     createdAt: string;
     updatedAt: string;
 }

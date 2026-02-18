@@ -205,6 +205,7 @@ export class SupabaseUserRepository implements UserRepository {
         if (updates.avatarUrl !== undefined) dbUpdates.avatar_url = updates.avatarUrl;
         if (updates.notificationsEnabled !== undefined) dbUpdates.notifications_enabled = updates.notificationsEnabled;
         if (updates.notificationTime !== undefined) dbUpdates.notification_time = updates.notificationTime;
+        if (updates.preferredCategories !== undefined) dbUpdates.preferred_categories = updates.preferredCategories;
 
         const { data, error } = await supabase
             .from('profiles')
@@ -284,6 +285,7 @@ export class SupabaseUserRepository implements UserRepository {
             lastLogin: row.last_login,
             streakCount: row.streak_count || 0,
             maxStreak: row.max_streak || 0,
+            preferredCategories: row.preferred_categories || [],
             createdAt: row.created_at,
             updatedAt: row.updated_at,
         };

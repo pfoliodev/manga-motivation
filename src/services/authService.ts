@@ -149,5 +149,11 @@ export const authService = {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
         return session;
+    },
+
+    async signInAnonymously() {
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error) throw error;
+        return data;
     }
 };

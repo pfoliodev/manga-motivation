@@ -73,23 +73,41 @@ export function PowerLevelProvider({ children }: { children: React.ReactNode }) 
      * Load user profile on mount and subscribe to changes
      */
     useEffect(() => {
+        // Initial load
         loadProfile();
 
-        // Subscribe to profile changes in realtime
-        let subscription: any = null;
+        // Listen for auth changes to reload profile
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                loadProfile();
+                setupSubscription(session?.user?.id);
+            } else if (event === 'SIGNED_OUT') {
+                setProfile(null);
+                setSeenQuoteIds(new Set());
+            }
+        });
 
-        const setupSubscription = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                subscription = supabase
-                    .channel('profile-changes')
+        // Subscribe to profile changes in realtime
+        let profileSubscription: any = null;
+
+        const setupSubscription = async (userId?: string) => {
+            // Unsubscribe existing if any
+            if (profileSubscription) {
+                profileSubscription.unsubscribe();
+            }
+
+            const activeUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+
+            if (activeUserId) {
+                profileSubscription = supabase
+                    .channel(`profile-changes-${activeUserId}`)
                     .on(
                         'postgres_changes',
                         {
                             event: 'UPDATE',
                             schema: 'public',
                             table: 'profiles',
-                            filter: `id=eq.${user.id}`
+                            filter: `id=eq.${activeUserId}`
                         },
                         (payload) => {
                             console.log('📡 Profile updated in realtime:', payload.new);
@@ -101,11 +119,15 @@ export function PowerLevelProvider({ children }: { children: React.ReactNode }) 
             }
         };
 
-        setupSubscription();
+        // Try to setup subscription if user is already there
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user) setupSubscription(user.id);
+        });
 
         return () => {
-            if (subscription) {
-                subscription.unsubscribe();
+            authSubscription?.unsubscribe();
+            if (profileSubscription) {
+                profileSubscription.unsubscribe();
             }
         };
     }, [loadProfile]);

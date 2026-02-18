@@ -248,13 +248,14 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
           </Animated.Text>
         </View>
 
-        <Animated.Text
-          style={authorAnimatedStyle}
-          className="absolute bottom-8 text-white/50 text-[10px] font-sans uppercase tracking-widest"
+        <Animated.View
+          style={[authorAnimatedStyle, { position: 'absolute', bottom: 32, width: '100%', alignItems: 'center' }]}
           pointerEvents="none"
         >
-          AURA : Manga & Motivation
-        </Animated.Text>
+          <Text className="text-white/20 text-[9px] font-sans uppercase tracking-[5px]">
+            AURA : Manga & Motivation
+          </Text>
+        </Animated.View>
 
         {/* Power Level Badge - Horizontal Pill Style */}
         {profile && (
