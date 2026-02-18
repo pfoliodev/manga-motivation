@@ -271,7 +271,7 @@ export class SupabaseUserRepository implements UserRepository {
     /**
      * Map database row to UserProfile domain model
      */
-    private mapToUserProfile(row: any): UserProfile {
+    mapToUserProfile(row: any): UserProfile {
         return {
             id: row.id,
             email: row.email,

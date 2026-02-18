@@ -93,7 +93,8 @@ export function PowerLevelProvider({ children }: { children: React.ReactNode }) 
                         },
                         (payload) => {
                             console.log('📡 Profile updated in realtime:', payload.new);
-                            setProfile(payload.new as UserProfile);
+                            const updatedProfile = userRepository.mapToUserProfile(payload.new);
+                            setProfile(updatedProfile);
                         }
                     )
                     .subscribe();

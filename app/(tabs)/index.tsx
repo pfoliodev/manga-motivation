@@ -1,5 +1,6 @@
 import QuoteCard from '@/components/QuoteCard';
 import { useFavorites } from '@/hooks/useFavorites';
+
 import { usePowerLevel } from '@/hooks/usePowerLevel';
 import { useQuotes } from '@/hooks/useQuotes';
 import * as Notifications from 'expo-notifications';
@@ -13,6 +14,7 @@ import {
   Text,
   View
 } from 'react-native';
+
 import Animated, {
   Extrapolation,
   interpolate,
@@ -26,6 +28,73 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Component for animated item - VERSION AMPLIFIEE
+const AnimeQuoteItem = React.memo(({
+  item,
+  index,
+  scrollY,
+  height,
+  isLiked,
+  onLike,
+  onShare
+}: {
+  item: any,
+  index: number,
+  scrollY: any,
+  height: number,
+  isLiked: boolean,
+  onLike: () => void,
+  onShare: () => void
+}) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const inputRange = [
+      (index - 1) * height,
+      index * height,
+      (index + 1) * height
+    ];
+
+    const scale = interpolate(
+      scrollY.value,
+      inputRange,
+      [0.8, 1, 0.8],
+      Extrapolation.CLAMP
+    );
+
+    const opacity = interpolate(
+      scrollY.value,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
+
+    const translateY = interpolate(
+      scrollY.value,
+      inputRange,
+      [100, 0, -100],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      transform: [{ scale }, { translateY }],
+      opacity,
+    };
+  });
+
+  return (
+    <Animated.View style={[{ height, justifyContent: 'center', alignItems: 'center' }, animatedStyle]}>
+      <QuoteCard
+        quote={item}
+        isLiked={isLiked}
+        onLike={onLike}
+        onShare={onShare}
+        height={height}
+        scrollY={scrollY}
+        index={index}
+      />
+    </Animated.View>
+  );
+});
 
 const XPGainAnimation = ({ visible, message, onAnimationComplete }: { visible: boolean; message?: string | null; onAnimationComplete: () => void }) => {
   const opacity = useSharedValue(0);
@@ -136,8 +205,9 @@ const XPGainAnimation = ({ visible, message, onAnimationComplete }: { visible: b
 export default function FeedScreen() {
   const { quotes, loading, error, refreshing, refresh } = useQuotes();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
-  const { markQuoteAsSeen } = usePowerLevel(); // Add hook
-  const flatListRef = useRef<Animated.FlatList<any>>(null);
+  const { markQuoteAsSeen } = usePowerLevel();
+
+  const flatListRef = useRef<any>(null);
   const { height: windowHeight } = Dimensions.get('window');
 
   // XP Animation state
@@ -158,24 +228,19 @@ export default function FeedScreen() {
   });
 
   // Tracking viewed items
-  const onViewableItemsChanged = useRef(async ({ viewableItems }: { viewableItems: any[] }) => {
+  const onViewableItemsChanged = React.useCallback(async ({ viewableItems }: { viewableItems: any[] }) => {
     if (viewableItems.length > 0) {
       const currentItem = viewableItems[0];
       if (currentItem && currentItem.item && currentItem.item.id) {
         try {
           const result = await markQuoteAsSeen(currentItem.item.id);
           if (result && result.xpGained > 0) {
-            // Reset then show animation
             setShowXP(false);
-
-            // Show 'LEVEL UP!' only if user actually leveled up
             if (result.leveledUp) {
               setXpMessage('LEVEL UP!');
             } else {
               setXpMessage(null);
             }
-
-            // Force a re-render/reflow before showing again
             setTimeout(() => setShowXP(true), 10);
           }
         } catch (e) {
@@ -183,13 +248,13 @@ export default function FeedScreen() {
         }
       }
     }
-  }).current;
+  }, [markQuoteAsSeen]);
 
   // Viewability config
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50, // Consider item viewed when 50% visible
-    minimumViewTime: 500, // User must look at it for 500ms
-  }).current;
+  const viewabilityConfig = React.useMemo(() => ({
+    itemVisiblePercentThreshold: 50,
+    minimumViewTime: 500,
+  }), []);
 
   useEffect(() => {
     checkInitialNotification();
@@ -222,57 +287,6 @@ export default function FeedScreen() {
       flatListRef.current.scrollToIndex({ index, animated: true });
     }
   };
-
-  // Component for animated item - VERSION AMPLIFIEE
-  const AnimeQuoteItem = React.memo(({ item, index, scrollY, height }: { item: any, index: number, scrollY: any, height: number }) => {
-    const animatedStyle = useAnimatedStyle(() => {
-      const inputRange = [
-        (index - 1) * height,
-        index * height,
-        (index + 1) * height
-      ];
-
-      const scale = interpolate(
-        scrollY.value,
-        inputRange,
-        [0.8, 1, 0.8], // Plus de zoom out
-        Extrapolation.CLAMP
-      );
-
-      const opacity = interpolate(
-        scrollY.value,
-        inputRange,
-        [0, 1, 0], // Transparence totale
-        Extrapolation.CLAMP
-      );
-
-      const translateY = interpolate(
-        scrollY.value,
-        inputRange,
-        [100, 0, -100], // Plus de mouvement vertical
-        Extrapolation.CLAMP
-      );
-
-      return {
-        transform: [{ scale }, { translateY }],
-        opacity,
-      };
-    });
-
-    return (
-      <Animated.View style={[{ height, justifyContent: 'center', alignItems: 'center' }, animatedStyle]}>
-        <QuoteCard
-          quote={item}
-          isLiked={isFavorite(item.id)}
-          onLike={() => toggleFavorite(item.id)}
-          onShare={() => console.log('Share')}
-          height={height}
-          scrollY={scrollY}
-          index={index}
-        />
-      </Animated.View>
-    );
-  });
 
   // Loading state
   if (loading && quotes.length === 0) {
@@ -325,6 +339,9 @@ export default function FeedScreen() {
             index={index}
             scrollY={scrollY}
             height={ITEM_HEIGHT}
+            isLiked={isFavorite(item.id)}
+            onLike={() => toggleFavorite(item.id)}
+            onShare={() => console.log('Share')}
           />
         )}
         keyExtractor={item => item.id}
