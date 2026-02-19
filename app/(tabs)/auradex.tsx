@@ -135,6 +135,8 @@ export default function AuraDexScreen() {
     const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedSource, setSelectedSource] = useState<string | null>(null);
 
     useEffect(() => {
         fetchQuotes();
@@ -169,15 +171,51 @@ export default function AuraDexScreen() {
         return Object.entries(stats).sort((a, b) => b[1].total - a[1].total);
     }, [allQuotes, seenQuoteIds]);
 
+    const sourceStats = useMemo(() => {
+        const stats: Record<string, { total: number, unlocked: number }> = {};
+        allQuotes.forEach(q => {
+            if (!stats[q.source]) {
+                stats[q.source] = { total: 0, unlocked: 0 };
+            }
+            stats[q.source].total++;
+            if (seenQuoteIds.has(q.id)) {
+                stats[q.source].unlocked++;
+            }
+        });
+        return Object.entries(stats).sort((a, b) => b[1].total - a[1].total);
+    }, [allQuotes, seenQuoteIds]);
+
     const progress = allQuotes.length > 0 ? unlockedCount / allQuotes.length : 0;
 
     const filteredQuotes = useMemo(() => {
-        if (!searchQuery) return allQuotes;
-        return allQuotes.filter(q =>
-            q.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            q.source.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [allQuotes, searchQuery]);
+        let filtered = allQuotes;
+
+        if (selectedCategory) {
+            filtered = filtered.filter(q => q.category === selectedCategory);
+        }
+
+        if (selectedSource) {
+            filtered = filtered.filter(q => q.source === selectedSource);
+        }
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(q =>
+                q.author.toLowerCase().includes(query) ||
+                q.source.toLowerCase().includes(query) ||
+                q.text.toLowerCase().includes(query)
+            );
+        }
+
+        // Trier pour mettre les débloquées en premier
+        return [...filtered].sort((a, b) => {
+            const aUnlocked = seenQuoteIds.has(a.id);
+            const bUnlocked = seenQuoteIds.has(b.id);
+            if (aUnlocked && !bUnlocked) return -1;
+            if (!aUnlocked && bUnlocked) return 1;
+            return 0;
+        });
+    }, [allQuotes, searchQuery, selectedCategory, selectedSource, seenQuoteIds]);
 
     if (loading || profileLoading) {
         return (
@@ -213,7 +251,7 @@ export default function AuraDexScreen() {
                             Progression de l'âme
                         </Text>
                         <Text className="text-[#FFD700] text-sm font-black italic">
-                            {unlockedCount} / {allQuotes.length}
+                            {Math.round(progress * 100)}% <Text className="text-white/20 text-[10px] ml-1">({unlockedCount} / {allQuotes.length})</Text>
                         </Text>
                     </View>
                     <View className="h-2 w-full bg-black/50 rounded-full overflow-hidden">
@@ -243,32 +281,85 @@ export default function AuraDexScreen() {
                     className="-mx-6 px-6"
                     contentContainerStyle={{ paddingRight: 40 }}
                 >
-                    {categoryStats.map(([category, { total, unlocked }]) => (
-                        <View
-                            key={category}
-                            className="bg-[#1A1A1A] border border-white/10 rounded-2xl px-5 py-4 mr-3 min-w-[120px]"
-                        >
-                            <Text className="text-white/40 text-[8px] font-bold uppercase tracking-widest mb-1.5">
-                                {category}
-                            </Text>
-                            <View className="flex-row items-end justify-between mb-3">
-                                <Text className="text-white text-lg font-black italic leading-none">
-                                    {Math.round((unlocked / total) * 100)}<Text className="text-[10px] text-white/40 font-bold ml-0.5">%</Text>
+                    {categoryStats.map(([category, { total, unlocked }]) => {
+                        const isSelected = selectedCategory === category;
+                        return (
+                            <Pressable
+                                key={category}
+                                onPress={() => setSelectedCategory(isSelected ? null : category)}
+                                className={`bg-[#1A1A1A] border ${isSelected ? 'border-[#FFD700]' : 'border-white/10'} rounded-2xl px-5 py-4 mr-3 min-w-[120px]`}
+                            >
+                                <Text className={`text-[8px] font-bold uppercase tracking-widest mb-1.5 ${isSelected ? 'text-[#FFD700]' : 'text-white/40'}`}>
+                                    {category}
                                 </Text>
-                                <Text className="text-[#FFD700] text-[10px] font-bold italic mb-0.5">
-                                    {unlocked}<Text className="text-white/20">/{total}</Text>
-                                </Text>
-                            </View>
+                                <View className="flex-row items-end justify-between mb-3">
+                                    <Text className="text-white text-lg font-black italic leading-none">
+                                        {Math.round((unlocked / total) * 100)}<Text className="text-[10px] text-white/40 font-bold ml-0.5">%</Text>
+                                    </Text>
+                                    <Text className="text-[#FFD700] text-[10px] font-bold italic mb-0.5">
+                                        {unlocked}<Text className="text-white/20">/{total}</Text>
+                                    </Text>
+                                </View>
 
-                            {/* Mini progress bar */}
-                            <View className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                                <View
-                                    style={{ width: `${(unlocked / total) * 100}%` }}
-                                    className="h-full bg-[#FFD700] rounded-full"
-                                />
-                            </View>
-                        </View>
-                    ))}
+                                {/* Mini progress bar */}
+                                <View className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                                    <View
+                                        style={{ width: `${(unlocked / total) * 100}%` }}
+                                        className={`h-full ${isSelected ? 'bg-white' : 'bg-[#FFD700]'} rounded-full`}
+                                    />
+                                </View>
+                            </Pressable>
+                        );
+                    })}
+                </ScrollView>
+
+                {/* Source Stats Section */}
+                <View className="mt-6 mb-4 flex-row items-center">
+                    <View className="w-1 h-4 bg-[#FFD700] rounded-full mr-3" />
+                    <Text className="text-white/60 text-[10px] font-black uppercase tracking-[2px]">
+                        Maîtrise des sources
+                    </Text>
+                </View>
+
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    className="-mx-6 px-6"
+                    contentContainerStyle={{ paddingRight: 40 }}
+                >
+                    {sourceStats.map(([source, { total, unlocked }]) => {
+                        const isSelected = selectedSource === source;
+                        return (
+                            <Pressable
+                                key={source}
+                                onPress={() => {
+                                    setSelectedSource(isSelected ? null : source);
+                                    // Optionnel: On peut garder le filtre catégorie actif ou le reset
+                                }}
+                                className={`bg-[#1A1A1A] border ${isSelected ? 'border-[#FFD700]' : 'border-white/10'} rounded-2xl px-5 py-4 mr-3 min-w-[120px]`}
+                            >
+                                <Text className={`text-[8px] font-bold uppercase tracking-widest mb-1.5 ${isSelected ? 'text-[#FFD700]' : 'text-white/40'}`} numberOfLines={1}>
+                                    {source}
+                                </Text>
+                                <View className="flex-row items-end justify-between mb-3">
+                                    <Text className="text-white text-lg font-black italic leading-none">
+                                        {Math.round((unlocked / total) * 100)}<Text className="text-[10px] text-white/40 font-bold ml-0.5">%</Text>
+                                    </Text>
+                                    <Text className="text-[#FFD700] text-[10px] font-bold italic mb-0.5">
+                                        {unlocked}<Text className="text-white/20">/{total}</Text>
+                                    </Text>
+                                </View>
+
+                                {/* Mini progress bar */}
+                                <View className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                                    <View
+                                        style={{ width: `${(unlocked / total) * 100}%` }}
+                                        className={`h-full ${isSelected ? 'bg-white' : 'bg-[#FFD700]'} rounded-full`}
+                                    />
+                                </View>
+                            </Pressable>
+                        );
+                    })}
                 </ScrollView>
 
                 {/* Search Bar */}
@@ -281,6 +372,26 @@ export default function AuraDexScreen() {
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
+                </View>
+
+                {/* Filter Results Count */}
+                <View className="mt-4 flex-row justify-between items-center">
+                    <Text className="text-white/20 text-[10px] font-bold uppercase tracking-[2px]">
+                        {filteredQuotes.length} {filteredQuotes.length > 1 ? 'résultats trouvés' : 'résultat trouvé'}
+                    </Text>
+                    {(selectedCategory || selectedSource || searchQuery) && (
+                        <Pressable
+                            onPress={() => {
+                                setSelectedCategory(null);
+                                setSelectedSource(null);
+                                setSearchQuery('');
+                            }}
+                        >
+                            <Text className="text-[#FFD700] text-[10px] font-bold uppercase tracking-widest">
+                                Réinitialiser
+                            </Text>
+                        </Pressable>
+                    )}
                 </View>
             </View>
 

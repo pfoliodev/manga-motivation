@@ -245,7 +245,8 @@
     "author": "Dominus",
     "source": "Path of Exile",
     "category": "Mental",
-    "aura_level": 94
+    "aura_level": 94,
+    "background_image": "poe/poe01.png"
   },
   {
     "id": "aura_032",
@@ -253,7 +254,8 @@
     "author": "Sirus",
     "source": "Path of Exile",
     "category": "Stoïcisme",
-    "aura_level": 98
+    "aura_level": 98,
+    "background_image": "poe/poe02.png"
   },
   {
     "id": "aura_033",
@@ -261,7 +263,8 @@
     "author": "Malachai",
     "source": "Path of Exile",
     "category": "Mental",
-    "aura_level": 95
+    "aura_level": 95,
+    "background_image": "poe/poe03.png"
   },
   {
     "id": "aura_034",
@@ -269,7 +272,8 @@
     "author": "Dominus",
     "source": "Path of Exile",
     "category": "Mental",
-    "aura_level": 100
+    "aura_level": 100,
+    "background_image": "poe/poe04.png"
   },
   {
     "id": "aura_035",
@@ -277,7 +281,8 @@
     "author": "Izaro",
     "source": "Path of Exile",
     "category": "Ambition",
-    "aura_level": 97
+    "aura_level": 97,
+    "background_image": "poe/poe05.png"
   },
   {
     "id": "aura_036",
@@ -285,7 +290,8 @@
     "author": "Izaro",
     "source": "Path of Exile",
     "category": "Discipline",
-    "aura_level": 91
+    "aura_level": 91,
+    "background_image": "poe/poe06.png"
   },
   {
     "id": "aura_037",
@@ -293,7 +299,8 @@
     "author": "L'Ancien (The Elder)",
     "source": "Path of Exile",
     "category": "Mental",
-    "aura_level": 96
+    "aura_level": 96,
+    "background_image": "poe/poe07.png"
   },
   {
     "id": "aura_038",
@@ -301,7 +308,8 @@
     "author": "Izaro",
     "source": "Path of Exile",
     "category": "Stoïcisme",
-    "aura_level": 93
+    "aura_level": 93,
+    "background_image": "poe/poe08.png"
   },
   {
     "id": "aura_039",
@@ -309,7 +317,8 @@
     "author": "Sirus",
     "source": "Path of Exile",
     "category": "Ambition",
-    "aura_level": 99
+    "aura_level": 99,
+    "background_image": "poe/poe09.png"
   },
   {
     "id": "aura_040",
@@ -317,6 +326,7 @@
     "author": "Piety",
     "source": "Path of Exile",
     "category": "Discipline",
-    "aura_level": 92
+    "aura_level": 92,
+    "background_image": "poe/poe10.png"
   }
 ]

@@ -54,6 +54,16 @@ const BACKGROUND_IMAGES: Record<string, any> = {
   'train-night.png': require('../assets/images/background-quotes/train-night.png'),
   'under-water.png': require('../assets/images/background-quotes/under-water.png'),
   'ville-enneige.png': require('../assets/images/background-quotes/ville-enneige.png'),
+  'poe/poe01.png': require('../assets/images/background-quotes/poe/poe01.png'),
+  'poe/poe02.png': require('../assets/images/background-quotes/poe/poe02.png'),
+  'poe/poe03.png': require('../assets/images/background-quotes/poe/poe03.png'),
+  'poe/poe04.png': require('../assets/images/background-quotes/poe/poe04.png'),
+  'poe/poe05.png': require('../assets/images/background-quotes/poe/poe05.png'),
+  'poe/poe06.png': require('../assets/images/background-quotes/poe/poe06.png'),
+  'poe/poe07.png': require('../assets/images/background-quotes/poe/poe07.png'),
+  'poe/poe08.png': require('../assets/images/background-quotes/poe/poe08.png'),
+  'poe/poe09.png': require('../assets/images/background-quotes/poe/poe09.png'),
+  'poe/poe10.png': require('../assets/images/background-quotes/poe/poe10.png'),
   'Gemini_Generated_Image_8zdx9q8zdx9q8zdx.png': require('../assets/images/background-quotes/Gemini_Generated_Image_8zdx9q8zdx9q8zdx.png'),
 };
 
