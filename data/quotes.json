@@ -238,5 +238,85 @@
     "source": "Réalité",
     "category": "Ambition",
     "aura_level": 91
+  },
+  {
+    "id": "aura_031",
+    "text": "L'exil est une école de survie, mais peu en sortent diplômés.",
+    "author": "Dominus",
+    "source": "Path of Exile",
+    "category": "Mental",
+    "aura_level": 94
+  },
+  {
+    "id": "aura_032",
+    "text": "Pourquoi lutter ? Tout ce qui est construit doit un jour s'effondrer.",
+    "author": "Sirus",
+    "source": "Path of Exile",
+    "category": "Stoïcisme",
+    "aura_level": 98
+  },
+  {
+    "id": "aura_033",
+    "text": "La mort n'est pas une fin, c'est une libération de la chair.",
+    "author": "Malachai",
+    "source": "Path of Exile",
+    "category": "Mental",
+    "aura_level": 95
+  },
+  {
+    "id": "aura_034",
+    "text": "Le monde n'est qu'une illusion, Exilé.",
+    "author": "Dominus",
+    "source": "Path of Exile",
+    "category": "Mental",
+    "aura_level": 100
+  },
+  {
+    "id": "aura_035",
+    "text": "Un homme n'est rien sans son ambition, mais l'ambition sans pouvoir est une agonie.",
+    "author": "Izaro",
+    "source": "Path of Exile",
+    "category": "Ambition",
+    "aura_level": 97
+  },
+  {
+    "id": "aura_036",
+    "text": "Là où il y a une volonté, il y a un chemin. Là où il y a un Golden Key, il y a une porte.",
+    "author": "Izaro",
+    "source": "Path of Exile",
+    "category": "Discipline",
+    "aura_level": 91
+  },
+  {
+    "id": "aura_037",
+    "text": "Regarde dans l'abîme, et l'abîme te montrera qui tu es vraiment.",
+    "author": "L'Ancien (The Elder)",
+    "source": "Path of Exile",
+    "category": "Mental",
+    "aura_level": 96
+  },
+  {
+    "id": "aura_038",
+    "text": "La justice est une balance : d'un côté l'ordre, de l'autre le chaos.",
+    "author": "Izaro",
+    "source": "Path of Exile",
+    "category": "Stoïcisme",
+    "aura_level": 93
+  },
+  {
+    "id": "aura_039",
+    "text": "Ressens-tu le néant ? C'est le futur que je t'offre.",
+    "author": "Sirus",
+    "source": "Path of Exile",
+    "category": "Ambition",
+    "aura_level": 99
+  },
+  {
+    "id": "aura_040",
+    "text": "Pour vivre, il faut être prêt à tout sacrifier, même son humanité.",
+    "author": "Piety",
+    "source": "Path of Exile",
+    "category": "Discipline",
+    "aura_level": 92
   }
 ]
