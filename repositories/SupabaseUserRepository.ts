@@ -38,6 +38,13 @@ export class SupabaseUserRepository implements UserRepository {
             if (error.code === '23505') {
                 return { seen: true, xpGained: 0, leveledUp: false };
             }
+
+            // Error 23503 is foreign_key_violation (quote deleted in DB but still in cache)
+            if (error.code === '23503') {
+                console.warn(`Quote ${quoteId} not found in database. It might have been deleted.`);
+                return { seen: false, xpGained: 0, leveledUp: false };
+            }
+
             console.error('Error marking quote as seen:', error);
             // Return safe default to avoid breaking app flow
             return { seen: false, xpGained: 0, leveledUp: false };

@@ -131,6 +131,8 @@ const CollectionCard = React.memo(({ quote, isUnlocked, index }: CollectionCardP
                                     <Text
                                         className="text-white text-[13px] font-bold leading-5 italic"
                                         numberOfLines={6}
+                                        adjustsFontSizeToFit
+                                        minimumFontScale={0.8}
                                         style={{ textShadowColor: 'rgba(0, 0, 0, 0.75)', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 10 }}
                                     >
                                         "{quote.text}"

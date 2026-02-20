@@ -118,7 +118,7 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
     const translateX = interpolate(
       scrollY.value,
       inputRange,
-      [120, 0, -120],
+      [50, 0, -50],
       Extrapolation.CLAMP
     );
 
@@ -141,7 +141,7 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
     const translateX = interpolate(
       scrollY.value,
       inputRange,
-      [-120, 0, 120],
+      [-50, 0, 50],
       Extrapolation.CLAMP
     );
 
@@ -235,10 +235,19 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
           pointerEvents="none"
         />
 
-        <View className="px-8 items-center w-full z-10" pointerEvents="none">
+        <View className="px-10 items-center w-full z-10" pointerEvents="none">
           <Animated.Text
-            style={textAnimatedStyle}
-            className="text-white text-3xl font-serif text-center leading-10 mb-8 tracking-wide italic opacity-90"
+            style={[
+              textAnimatedStyle,
+              { width: '100%', paddingHorizontal: 4 }
+            ]}
+            numberOfLines={0}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+            className={`text-white font-serif text-center mb-8 tracking-wide italic opacity-90 ${quote.text.length > 120 ? 'text-xl leading-8' :
+                quote.text.length > 80 ? 'text-2xl leading-9' :
+                  'text-3xl leading-10'
+              }`}
           >
             "{quote.text}"
           </Animated.Text>
