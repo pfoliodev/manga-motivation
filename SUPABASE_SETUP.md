@@ -37,6 +37,7 @@ Les migrations doivent être exécutées dans l'ordre suivant pour garantir la c
 4. **Power Level System** : `supabase/migrations/20260217_add_power_level_system.sql` (XP, Niveaux, Rangs)
 5. **User Tracking** : `supabase/migrations/20260217_create_user_seen_quotes.sql` (Suivi des lectures)
 6. **Realtime** : `supabase/migrations/20260217_enable_realtime_profiles.sql` (Mises à jour instantanées)
+7. **PoE Content** : `supabase/migrations/20260219_2345_insert_poe_quotes.sql` (Extension Path of Exile)
 
 ### 5. Vérifier l'installation
 

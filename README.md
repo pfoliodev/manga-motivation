@@ -4,16 +4,18 @@ AURA est une application mobile élégante et inspirante conçue pour motiver le
 
 ## ✨ Fonctionnalités
 
-- **Citations Quotidiennes** : Recevez une dose d'inspiration chaque jour avec des citations de personnages iconiques (Goku, Naruto, Luffy, etc.).
+- **Citations Quotidiennes** : Recevez une dose d'inspiration chaque jour avec des citations de personnages iconiques (Goku, Naruto, Luffy, Dominus, etc.).
+- **AuraDex (Collection)** : Un système complet pour collectionner vos inspirations. Visualisez votre progression globale et débloquez des centaines de cartes stylisées.
+- **Filtrage Intelligent** : Filtrez les citations par **Catégories** (Discipline, Mental, Ambition, etc.) ou par **Sources** (Naruto, One Piece, Path of Exile, etc.).
 - **Système d'Aura (Gamification)** : Progressez à travers 7 rangs épiques (Bois, Fer, Bronze, Argent, Or, Platine, Diamant) basés sur votre assiduité.
 - **Gain d'XP Dynamique** : Gagnez de l'XP en découvrant de nouvelles citations chaque jour.
 - **Progression en Temps Réel** : Suivez votre niveau d'Aura et votre barre d'XP qui évoluent instantanément.
-- **Suivi des Découvertes** : Identifiez facilement les citations déjà lues grâce à l'indicateur discret "DÉJÀ LU".
-- **Catégories Variées** : Parcourez les citations par thèmes (Discipline, Amitié, Force, Sagesse, etc.).
+- **Suivi des Découvertes** : Identifiez facilement les citations déjà lues grâce à l'AuraDex qui sépare les découvertes des mystères.
 - **Favoris** : Enregistrez vos citations préférées pour les retrouver facilement.
-- **Partage Social** : Partagez des citations stylisées directement sur vos réseaux sociaux (Instagram, WhatsApp, etc.).
-- **Animations Shōnen** : Une interface immersive avec des animations de gain d'XP et des feedbacks haptiques.
+- **Partage Social** : Partagez des citations stylisées avec décors immersifs directement sur vos réseaux sociaux.
+- **Animations Shōnen** : Une interface immersive avec des animations de gain d'XP, des feedbacks haptiques et des scrolls paralax.
 - **Authentification Sécurisée** : Connexion simplifiée via Google, Apple ou Email (via Supabase).
+- **Optimisation Performance** : Rendu ultra-fluide grâce à la mémoïsation avancée et à l'optimisation de la VirtualizedList.
 
 ## 🏆 Système de Rangs
 
