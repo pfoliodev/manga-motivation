@@ -96,5 +96,3 @@ AURA utilise un **Design System** sombre et épuré, mettant en avant les visuel
 - **Typographie** : Polices modernes et lisibles adaptées au mobile.
 
 ---
-
-Développé avec ❤️ par [Votre Nom/Organisation]
