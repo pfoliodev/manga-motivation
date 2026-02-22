@@ -1,7 +1,10 @@
+import { QuestCard } from '@/components/QuestCard';
 import { usePowerLevel } from '@/hooks/usePowerLevel';
+import { questRepository } from '@/repositories/SupabaseQuestRepository';
 import { quoteRepository } from '@/repositories/SupabaseQuoteRepository';
 import { Quote } from '@/types/database.types';
-import { ChevronUp, Lock, Search, Sparkles } from 'lucide-react-native';
+import { QuestProgress } from '@/types/quest';
+import { ChevronUp, Lock, Search, Sparkles, Target } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -226,7 +229,9 @@ const CollectionCard = React.memo(({ quote, isUnlocked, index }: CollectionCardP
 export default function AuraDexScreen() {
     const { profile, seenQuoteIds, loading: profileLoading } = usePowerLevel();
     const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
+    const [quests, setQuests] = useState<QuestProgress[]>([]);
     const [loading, setLoading] = useState(true);
+    const [questsLoading, setQuestsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSource, setSelectedSource] = useState<string | null>(null);
@@ -236,6 +241,38 @@ export default function AuraDexScreen() {
     useEffect(() => {
         fetchQuotes();
     }, []);
+
+    useEffect(() => {
+        if (profile?.id) {
+            fetchQuests(profile.id);
+        }
+    }, [profile?.id]);
+
+    const fetchQuests = async (userId: string) => {
+        setQuestsLoading(true);
+        try {
+            const data = await questRepository.getUserDailyQuests(userId);
+            setQuests(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setQuestsLoading(false);
+        }
+    };
+
+    const handleClaimQuest = async (questProgressId: string) => {
+        const success = await questRepository.claimQuestReward(questProgressId);
+        if (success && profile?.id) {
+            // Optimistic update
+            setQuests(prev => prev.map(q =>
+                q.id === questProgressId
+                    ? { ...q, claimedAt: new Date().toISOString() }
+                    : q
+            ));
+            // In a real app, trigger a generic global refresh of XP & Aura 
+            // from the user profile, e.g. using PowerLevelContext context functions!
+        }
+    };
 
     const fetchQuotes = async () => {
         try {
@@ -372,6 +409,38 @@ export default function AuraDexScreen() {
                                 <Sparkles size={20} color="#FFD700" />
                             </View>
                         </View>
+
+                        {/* Quests Section */}
+                        {quests.length > 0 && (
+                            <View className="mb-6 mt-4">
+                                <View className="flex-row items-center mb-4">
+                                    <View className="w-1 h-5 bg-orange-500 rounded-full mr-3 shadow-orange-500 shadow-md" />
+                                    <View className="flex-row items-center space-x-2">
+                                        <Target size={18} color="#f97316" />
+                                        <Text className="text-white text-lg font-black uppercase tracking-widest pl-2">
+                                            Quêtes Journalières
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    className="-mx-4 px-4"
+                                    snapToInterval={width - 48} // Width of card approx
+                                    decelerationRate="fast"
+                                >
+                                    {quests.map((q, i) => (
+                                        <View key={q.id} style={{ width: width - 64, marginRight: 16 }}>
+                                            <QuestCard
+                                                progress={q}
+                                                onClaim={() => handleClaimQuest(q.id)}
+                                            />
+                                        </View>
+                                    ))}
+                                </ScrollView>
+                            </View>
+                        )}
 
                         {/* Progress Bar Container */}
                         <View className="bg-[#1A1A1A] rounded-2xl p-4 mt-2 border border-white/5">

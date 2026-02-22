@@ -131,6 +131,76 @@ export interface Database {
                     viewed_at?: string
                 }
             }
+            daily_quests: {
+                Row: {
+                    id: string
+                    title: string
+                    description: string
+                    action_type: 'READ_QUOTES' | 'SHARE_QUOTE' | 'ADD_FAVORITE' | 'STREAK_DAYS'
+                    target_value: number
+                    xp_reward: number
+                    aura_reward: number
+                    bonus_rewards: any
+                    is_active: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    title: string
+                    description: string
+                    action_type: 'READ_QUOTES' | 'SHARE_QUOTE' | 'ADD_FAVORITE' | 'STREAK_DAYS'
+                    target_value: number
+                    xp_reward?: number
+                    aura_reward?: number
+                    bonus_rewards?: any
+                    is_active?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    title?: string
+                    description?: string
+                    action_type?: 'READ_QUOTES' | 'SHARE_QUOTE' | 'ADD_FAVORITE' | 'STREAK_DAYS'
+                    target_value?: number
+                    xp_reward?: number
+                    aura_reward?: number
+                    bonus_rewards?: any
+                    is_active?: boolean
+                    created_at?: string
+                }
+            }
+            user_quests: {
+                Row: {
+                    id: string
+                    user_id: string
+                    quest_id: string
+                    assigned_date: string
+                    current_progress: number
+                    is_completed: boolean
+                    completed_at: string | null
+                    claimed_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    quest_id: string
+                    assigned_date?: string
+                    current_progress?: number
+                    is_completed?: boolean
+                    completed_at?: string | null
+                    claimed_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    quest_id?: string
+                    assigned_date?: string
+                    current_progress?: number
+                    is_completed?: boolean
+                    completed_at?: string | null
+                    claimed_at?: string | null
+                }
+            }
         }
         Views: {
             [_ in never]: never
@@ -139,7 +209,7 @@ export interface Database {
             [_ in never]: never
         }
         Enums: {
-            [_ in never]: never
+            quest_action_type: 'READ_QUOTES' | 'SHARE_QUOTE' | 'ADD_FAVORITE' | 'STREAK_DAYS'
         }
         CompositeTypes: {
             [_ in never]: never
