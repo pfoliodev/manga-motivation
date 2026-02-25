@@ -1,4 +1,5 @@
 import CustomSplashScreen from '@/components/SplashScreen';
+import { DailyQuestsProvider } from '@/context/DailyQuestsContext';
 import { PowerLevelProvider } from '@/context/PowerLevelContext';
 import { Bangers_400Regular } from '@expo-google-fonts/bangers';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
@@ -62,17 +63,19 @@ function RootLayoutNav() {
       <ThemeProvider value={DarkTheme}>
         <AuthProvider>
           <PowerLevelProvider>
-            <FavoritesProvider>
-              <Stack>
-                <Stack.Screen name="onboarding/first" options={{ headerShown: false }} />
-                <Stack.Screen name="selection" options={{ headerShown: false }} />
-                <Stack.Screen name="onboarding/username" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
-                <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
-                <Stack.Screen name="login" options={{ headerShown: false }} />
-              </Stack>
-            </FavoritesProvider>
+            <DailyQuestsProvider>
+              <FavoritesProvider>
+                <Stack>
+                  <Stack.Screen name="onboarding/first" options={{ headerShown: false }} />
+                  <Stack.Screen name="selection" options={{ headerShown: false }} />
+                  <Stack.Screen name="onboarding/username" options={{ headerShown: false }} />
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="paywall" options={{ presentation: 'modal', headerShown: false }} />
+                  <Stack.Screen name="login" options={{ headerShown: false }} />
+                </Stack>
+              </FavoritesProvider>
+            </DailyQuestsProvider>
           </PowerLevelProvider>
         </AuthProvider>
       </ThemeProvider>

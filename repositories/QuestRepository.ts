@@ -17,7 +17,7 @@ export interface QuestRepository {
     /**
      * Update progress of a specific quest type (for internal triggers, e.g. "READ_QUOTES")
      */
-    incrementQuestProgress(userId: string, actionType: string, increment?: number): Promise<void>;
+    incrementQuestProgress(userId: string, actionType: string, increment?: number, isAbsolute?: boolean): Promise<void>;
 
     /**
      * Assigns random active daily quests to the user for today

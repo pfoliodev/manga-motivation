@@ -77,6 +77,13 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
                 await favoriteRepository.removeFavorite(user.id, quoteId);
             } else {
                 await favoriteRepository.addFavorite(user.id, quoteId);
+                // Advance quest progress for adding favorite
+                try {
+                    const { questRepository } = await import('@/repositories/SupabaseQuestRepository');
+                    await questRepository.incrementQuestProgress(user.id, 'ADD_FAVORITE', 1);
+                } catch (qErr) {
+                    console.error('Failed to update quest progress:', qErr);
+                }
             }
         } catch (error) {
             console.error('Error toggling favorite:', error);

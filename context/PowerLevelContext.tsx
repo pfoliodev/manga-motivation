@@ -143,6 +143,14 @@ export function PowerLevelProvider({ children }: { children: React.ReactNode }) 
             const result = await userRepository.updateDailyStreak(user.id);
             setProfile(result.profile);
 
+            // Update streak quests with absolute value
+            try {
+                const { questRepository } = await import('@/repositories/SupabaseQuestRepository');
+                await questRepository.incrementQuestProgress(user.id, 'STREAK_DAYS', result.profile.streakCount, true);
+            } catch (qErr) {
+                console.error('Failed to update quest progress for streak:', qErr);
+            }
+
             if (result.xpGained > 0) {
                 console.log(`🔥 Gained ${result.xpGained} XP!`);
             }
@@ -185,6 +193,16 @@ export function PowerLevelProvider({ children }: { children: React.ReactNode }) 
             if (!user) return;
 
             const result = await userRepository.markQuoteAsSeen(user.id, quoteId);
+
+            // Advance quest progress for reading quotes
+            if (!seenQuoteIds.has(quoteId)) {
+                try {
+                    const { questRepository } = await import('@/repositories/SupabaseQuestRepository');
+                    await questRepository.incrementQuestProgress(user.id, 'READ_QUOTES', 1);
+                } catch (qErr) {
+                    console.error('Failed to update quest progress:', qErr);
+                }
+            }
 
             // Update seen list locally
             setSeenQuoteIds(prev => {

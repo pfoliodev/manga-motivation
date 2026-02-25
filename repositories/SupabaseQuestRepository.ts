@@ -82,7 +82,7 @@ export class SupabaseQuestRepository implements QuestRepository {
         return true;
     }
 
-    async incrementQuestProgress(userId: string, actionType: string, increment: number = 1): Promise<void> {
+    async incrementQuestProgress(userId: string, actionType: string, increment: number = 1, isAbsolute: boolean = false): Promise<void> {
         const today = new Date().toISOString().split('T')[0];
 
         // Find quest for this user & action that is not completed yet
@@ -107,7 +107,8 @@ export class SupabaseQuestRepository implements QuestRepository {
                 dq.action_type,
                 q.current_progress,
                 dq.target_value,
-                increment
+                increment,
+                isAbsolute
             );
 
             const updates: any = {

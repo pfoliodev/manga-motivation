@@ -200,9 +200,19 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
           });
           await Sharing.shareAsync(uri);
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+          if (profile) {
+            try {
+              const { questRepository } = await import('@/repositories/SupabaseQuestRepository');
+              await questRepository.incrementQuestProgress(profile.id, 'SHARE_QUOTE', 1);
+            } catch (qErr) {
+              console.error('Failed to update quest progress for share:', qErr);
+            }
+          }
         }
       } catch (error) {
         console.error('Error sharing quote:', error);
+
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
       onShare?.();
@@ -245,8 +255,8 @@ export default function QuoteCard({ quote, isLiked, onLike, onShare, height, scr
             adjustsFontSizeToFit
             minimumFontScale={0.7}
             className={`text-white font-serif text-center mb-8 tracking-wide italic opacity-90 ${quote.text.length > 120 ? 'text-xl leading-8' :
-                quote.text.length > 80 ? 'text-2xl leading-9' :
-                  'text-3xl leading-10'
+              quote.text.length > 80 ? 'text-2xl leading-9' :
+                'text-3xl leading-10'
               }`}
           >
             "{quote.text}"

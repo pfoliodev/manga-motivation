@@ -7,9 +7,10 @@ export function checkQuestProgress(
     actionType: ActionType,
     currentProgress: number,
     target: number,
-    increment: number = 1
+    increment: number = 1,
+    isAbsolute: boolean = false
 ): { newProgress: number; isCompleted: boolean } {
-    const newProgress = Math.min(currentProgress + increment, target);
+    const newProgress = isAbsolute ? Math.min(increment, target) : Math.min(currentProgress + increment, target);
     const isCompleted = newProgress >= target;
 
     return {

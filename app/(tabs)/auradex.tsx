@@ -1,11 +1,11 @@
 import { QuestCard } from '@/components/QuestCard';
+import { useDailyQuests } from '@/context/DailyQuestsContext';
 import { usePowerLevel } from '@/hooks/usePowerLevel';
-import { questRepository } from '@/repositories/SupabaseQuestRepository';
 import { quoteRepository } from '@/repositories/SupabaseQuoteRepository';
 import { Quote } from '@/types/database.types';
-import { QuestProgress } from '@/types/quest';
+import { useFocusEffect } from 'expo-router';
 import { ChevronUp, Lock, Search, Sparkles, Target } from 'lucide-react-native';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Dimensions,
@@ -228,10 +228,9 @@ const CollectionCard = React.memo(({ quote, isUnlocked, index }: CollectionCardP
 
 export default function AuraDexScreen() {
     const { profile, seenQuoteIds, loading: profileLoading } = usePowerLevel();
+    const { quests, loading: questsLoading, claimReward: handleClaimQuest, refresh: refreshQuests } = useDailyQuests();
     const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
-    const [quests, setQuests] = useState<QuestProgress[]>([]);
     const [loading, setLoading] = useState(true);
-    const [questsLoading, setQuestsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSource, setSelectedSource] = useState<string | null>(null);
@@ -242,37 +241,12 @@ export default function AuraDexScreen() {
         fetchQuotes();
     }, []);
 
-    useEffect(() => {
-        if (profile?.id) {
-            fetchQuests(profile.id);
-        }
-    }, [profile?.id]);
-
-    const fetchQuests = async (userId: string) => {
-        setQuestsLoading(true);
-        try {
-            const data = await questRepository.getUserDailyQuests(userId);
-            setQuests(data);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setQuestsLoading(false);
-        }
-    };
-
-    const handleClaimQuest = async (questProgressId: string) => {
-        const success = await questRepository.claimQuestReward(questProgressId);
-        if (success && profile?.id) {
-            // Optimistic update
-            setQuests(prev => prev.map(q =>
-                q.id === questProgressId
-                    ? { ...q, claimedAt: new Date().toISOString() }
-                    : q
-            ));
-            // In a real app, trigger a generic global refresh of XP & Aura 
-            // from the user profile, e.g. using PowerLevelContext context functions!
-        }
-    };
+    useFocusEffect(
+        useCallback(() => {
+            // Force refresh quests when coming back to this tab
+            refreshQuests();
+        }, [refreshQuests])
+    );
 
     const fetchQuotes = async () => {
         try {
